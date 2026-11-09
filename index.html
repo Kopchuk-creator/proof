@@ -143,12 +143,26 @@ section{padding-block:clamp(80px,12vw,170px)}
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,7vw,110px);align-items:center}
 .about .ph{aspect-ratio:4/5;border-radius:28px}
 .about h2{margin-block:18px 30px}
-.about .lead{font-size:1.2rem;color:var(--soft);max-width:520px;margin-bottom:46px}
-.points{border-top:1px solid var(--line)}
-.point{display:grid;grid-template-columns:54px 1fr;gap:14px;padding:22px 0;border-bottom:1px solid var(--line)}
-.point span{font-weight:700;color:var(--gold);font-size:.9rem;padding-top:4px}
-.point h3{font-size:1.35rem;letter-spacing:-.02em;margin-bottom:4px;line-height:1.15}
-.point p{color:var(--soft);font-size:.98rem}
+.about .lead{font-size:1.2rem;color:var(--soft);max-width:520px}
+/* три принципи, пов'язані стрілками, що переплітаються */
+.flow{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(64px,8vw,128px);margin-top:clamp(56px,8vw,110px)}
+.flow-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
+.fcard{position:relative;z-index:1;background:#331d12;border:1px solid var(--line);border-radius:24px;padding:clamp(24px,2.4vw,34px);
+  transition:border-color .3s,transform .3s}
+.fcard:hover{border-color:rgba(233,181,103,.45);transform:translateY(-3px)}
+.fnum{display:block;font-size:clamp(2.4rem,3.6vw,3.4rem);font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--gold);margin-bottom:18px}
+.fcard h3{font-size:1.35rem;letter-spacing:-.02em;line-height:1.15;margin-bottom:8px}
+.fcard p{color:var(--soft);font-size:.98rem}
+.flow-lines .halo{fill:none;stroke:var(--bg2);stroke-width:11;stroke-linecap:round}
+.flow-lines .fwd{fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round}
+.flow-lines .back{fill:none;stroke:rgba(233,181,103,.55);stroke-width:1.6;stroke-dasharray:3 6;stroke-linecap:round}
+.flow-lines .halo,.flow-lines .fwd{stroke-dasharray:1;stroke-dashoffset:0}
+.js .flow:not(.in) .halo,.js .flow:not(.in) .fwd{stroke-dashoffset:1}
+.js .flow:not(.in) .back{opacity:0}
+.flow.in .halo,.flow.in .fwd{animation:draw 1.1s cubic-bezier(.6,0,.2,1) both}
+.flow.in .back{animation:fadein .8s ease both}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
 
 .oven{background:var(--bg0)}
 .oven-head{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;margin-bottom:56px}
@@ -223,6 +237,7 @@ section{padding-block:clamp(80px,12vw,170px)}
   .bgslide{width:100%;-webkit-mask-image:none;mask-image:none}
   .about-grid,.menu-body,.c-grid{grid-template-columns:1fr}
   .about .ph{aspect-ratio:4/3}
+  .flow{grid-template-columns:1fr;gap:76px}
   .menu-body .ph{position:relative;top:0;aspect-ratio:4/3}
   .slot{grid-template-columns:86px 1fr}
   .slot .s{grid-column:2}
@@ -330,11 +345,14 @@ section{padding-block:clamp(80px,12vw,170px)}
       <div class="eyebrow">Про нас</div>
       <h2>Хліб не любить <span class="gold">поспіху.</span></h2>
       <p class="lead">Proof почався з кухонної печі і закваски від бабусі. Спершу пекли для друзів, потім для сусідів, а одного ранку відкрили двері. Відтоді нічого не змінилося: тісто, час і добрі інгредієнти.</p>
-      <div class="points">
-        <div class="point"><span>01</span><div><h3>Повільне тісто</h3><p>Не прискорюємо те, що має дозріти. Смак з'являється саме там.</p></div></div>
-        <div class="point"><span>02</span><div><h3>Мало, але свіже</h3><p>У вітрині тільки те, що випекли сьогодні.</p></div></div>
-        <div class="point"><span>03</span><div><h3>Кава під випічку</h3><p>До кожної булочки підбираємо напій, з яким вона найсмачніша.</p></div></div>
-      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="flow rv" id="flow">
+      <svg class="flow-lines" id="flowLines" aria-hidden="true"></svg>
+      <article class="fcard"><span class="fnum">01</span><h3>Повільне тісто</h3><p>Не прискорюємо те, що має дозріти. Смак з'являється саме там.</p></article>
+      <article class="fcard"><span class="fnum">02</span><h3>Мало, але свіже</h3><p>У вітрині тільки те, що випекли сьогодні.</p></article>
+      <article class="fcard"><span class="fnum">03</span><h3>Кава під випічку</h3><p>До кожної булочки підбираємо напій, з яким вона найсмачніша.</p></article>
     </div>
   </div>
 </section>
@@ -503,6 +521,41 @@ new IntersectionObserver(([e])=>{
 },{threshold:.15}).observe(hero);
 playAll();
 setSlide(0);
+
+/* ---------- «Про нас»: стрілки між картками ---------- */
+const flowEl=document.getElementById('flow'), flowSvg=document.getElementById('flowLines');
+const NS='http://www.w3.org/2000/svg';
+function drawFlow(){
+  const box=flowEl.getBoundingClientRect();
+  const cards=[...flowEl.querySelectorAll('.fcard')].map(c=>{const r=c.getBoundingClientRect();return {l:r.left-box.left,t:r.top-box.top,r:r.right-box.left,b:r.bottom-box.top,w:r.width,h:r.height};});
+  const vertical=cards[1].t>=cards[0].b-1;
+  let out='<defs><marker id="fl-a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#E9B567"/></marker>'+
+          '<marker id="fl-b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="rgba(233,181,103,.55)"/></marker></defs>';
+  const gap=7;
+  for(let i=0;i<cards.length-1;i++){
+    const a=cards[i], b=cards[i+1], delay=(0.25+i*0.7).toFixed(2)+'s';
+    let fwd, back;
+    if(!vertical){
+      const x1=a.r+gap, x2=b.l-gap, d=(x2-x1)*0.75;
+      const a1=a.t+a.h*0.24, a2=a.t+a.h*0.76, b1=b.t+b.h*0.24, b2=b.t+b.h*0.76;
+      fwd =`M${x1} ${a1}C${x1+d} ${a1},${x2-d} ${b2},${x2} ${b2}`;   // вперед: зверху вниз
+      back=`M${x2} ${b1}C${x2-d} ${b1},${x1+d} ${a2},${x1} ${a2}`;   // назад: знизу вгору
+    }else{
+      const y1=a.b+gap, y2=b.t-gap, d=(y2-y1)*0.75;
+      const a1=a.l+a.w*0.24, a2=a.l+a.w*0.76, b1=b.l+b.w*0.24, b2=b.l+b.w*0.76;
+      fwd =`M${a1} ${y1}C${a1} ${y1+d},${b2} ${y2-d},${b2} ${y2}`;
+      back=`M${b1} ${y2}C${b1} ${y2-d},${a2} ${y1+d},${a2} ${y1}`;
+    }
+    // спершу «нижня» нитка, потім світлий обвід і «верхня» — так вони переплітаються
+    out+=`<path class="back" d="${back}" marker-end="url(#fl-b)" style="animation-delay:${delay}"/>`+
+         `<path class="halo" d="${fwd}" pathLength="1" style="animation-delay:${delay}"/>`+
+         `<path class="fwd" d="${fwd}" pathLength="1" marker-end="url(#fl-a)" style="animation-delay:${delay}"/>`;
+  }
+  flowSvg.innerHTML=out;
+}
+drawFlow();
+new ResizeObserver(drawFlow).observe(flowEl);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawFlow);
 
 /* ---------- статус «відкрито» ---------- */
 function openRange(d){ return (d===0||d===6) ? HOURS.we : HOURS.wd; }
