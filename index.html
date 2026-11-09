@@ -153,7 +153,12 @@ section{padding-block:clamp(80px,12vw,170px)}
 .about-grid{display:grid;grid-template-columns:5fr 7fr;gap:clamp(40px,6vw,104px);align-items:start}
 .about-photo{position:sticky;top:96px;margin:0;aspect-ratio:4/5;border-radius:28px;overflow:hidden;
   background:linear-gradient(135deg,#3a2216,#6b4021 55%,#c98a3b)}
-.about-photo img{width:100%;height:100%;object-fit:cover}
+.about-photo img{width:100%;height:100%;object-fit:cover;transform:scale(var(--pz,1)) translate3d(0,var(--py,0px),0);transform-origin:50% 60%}
+/* фото «розтягується» під час наїзду + борошно над ним */
+.about-photo.stretch{clip-path:inset(var(--pi-y,0%) var(--pi-x,0%) round 28px)}
+.about-photo.stretch img{will-change:transform}
+.flour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.about-photo.stretch{cursor:pointer}
 .about-copy h2{font-size:clamp(3rem,6.4vw,6.6rem);line-height:.92;letter-spacing:-.05em;margin-block:20px 36px;text-wrap:balance}
 .about .lead{font-size:clamp(1.1rem,1.35vw,1.3rem);line-height:1.65;color:var(--soft);max-width:36ch}
 .braid{position:relative;margin-top:clamp(64px,8vw,112px);padding-left:92px;display:grid;gap:clamp(56px,7vw,96px)}
@@ -347,6 +352,7 @@ section{padding-block:clamp(80px,12vw,170px)}
   <div class="wrap about-grid">
     <figure class="about-photo">
       <img loading="lazy" src="media/about.jpg" alt="Пекар розтягує тісто на заквасці" style="object-position:center 55%" onerror="this.style.display='none'">
+      <canvas class="flour" id="flour" aria-hidden="true"></canvas>
     </figure>
     <div class="about-copy">
       <div class="eyebrow">Про нас</div>
@@ -579,6 +585,78 @@ addEventListener('scroll',()=>{ if(!braidTick){ braidTick=true; requestAnimation
 new ResizeObserver(drawBraid).observe(braidEl);
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawBraid);
 drawBraid();
+
+/* ---------- «Про нас»: фото розтягується, над ним летить борошно ---------- */
+(()=>{
+  const fig=document.querySelector('.about-photo'), img=fig.querySelector('img');
+  const about=document.getElementById('about');
+  const moving=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!moving) return;                                   // без руху — просто фото
+  fig.classList.add('stretch');
+  // 1) поки секція наїжджає, рамка розкривається, а знімок «відтягується» назад
+  let tick=false;
+  function stretch(){
+    tick=false;
+    // де зараз верх фото: беремо зсув секції з самої прокрутки (той самий відлік, що й у наїзду)
+    const st=document.getElementById('stack'), vh=innerHeight;
+    const off=fig.getBoundingClientRect().top-about.getBoundingClientRect().top;     // відступ фото всередині секції
+    const aboutTop=(st&&st.classList.contains('on')) ? Math.max(0,1+st.getBoundingClientRect().top/vh)*vh
+                                                     : about.getBoundingClientRect().top;
+    const figTop=aboutTop+off;
+    const p=Math.min(1,Math.max(0,(vh-figTop)/(vh*0.8)));      // 0 — фото тільки з'являється знизу, 1 — повністю на екрані
+    const e=1-Math.pow(1-p,2);                                   // м'яке сповільнення в кінці
+    fig.style.setProperty('--pi-y',(16*(1-e)).toFixed(2)+'%');
+    fig.style.setProperty('--pi-x',(11*(1-e)).toFixed(2)+'%');
+    fig.style.setProperty('--pz',(1.22-0.22*e).toFixed(4));
+    // після приземлення — легкий паралакс усередині рамки
+    const r=fig.getBoundingClientRect();
+    const drift=Math.max(-1,Math.min(1,(r.top+r.height/2-innerHeight/2)/innerHeight));
+    fig.style.setProperty('--py',(drift*-18).toFixed(1)+'px');
+  }
+  addEventListener('scroll',()=>{ if(!tick){ tick=true; requestAnimationFrame(stretch); } },{passive:true});
+  addEventListener('resize',stretch); stretch();
+
+  // 2) борошно: повільно летить вниз, курсор його розганяє, клік — підкидає жменю
+  const cv=document.getElementById('flour'), ctx=cv.getContext('2d');
+  let W=0,H=0,dpr=1,dust=[],puffs=[],ptr=null,running=false,raf=0,t=0;
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const make=(x,y)=>({x:x??rnd(0,W),y:y??rnd(0,H),vx:rnd(-.08,.08),vy:rnd(.04,.22),r:rnd(.6,2.2),a:rnd(.22,.7),ph:rnd(0,6.28)});
+  function size(){
+    const b=fig.getBoundingClientRect(); dpr=Math.min(2,devicePixelRatio||1);
+    W=b.width; H=b.height; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(W*H/5200); while(dust.length<n) dust.push(make()); dust.length=n;
+  }
+  function frame(){
+    t+=1; ctx.clearRect(0,0,W,H);
+    const all=dust.concat(puffs);
+    for(const d of all){
+      d.vx+=Math.sin(t*.012+d.ph)*.004;                          // легкий протяг
+      if(ptr){ const dx=d.x-ptr.x, dy=d.y-ptr.y, dd=dx*dx+dy*dy;
+        if(dd<9000){ const f=(1-dd/9000)*.55/Math.sqrt(dd+1); d.vx+=dx*f; d.vy+=dy*f; } }
+      d.vx*=.97; d.vy=d.vy*.97+(d.life? .012 : .006);
+      d.x+=d.vx; d.y+=d.vy;
+      if(d.life!==undefined){ d.life-=1; d.a*=.985; }
+      else{ if(d.y>H+4){ d.y=-4; d.x=rnd(0,W); d.vy=rnd(.04,.22); } if(d.x<-4) d.x=W+4; if(d.x>W+4) d.x=-4; }
+      ctx.globalAlpha=d.a; ctx.fillStyle='#FFF1DC';
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,6.283); ctx.fill();
+    }
+    puffs=puffs.filter(p=>p.life>0&&p.a>.02);
+    ctx.globalAlpha=1;
+    raf=requestAnimationFrame(frame);
+  }
+  const start=()=>{ if(!running){ running=true; raf=requestAnimationFrame(frame); } };
+  const stop=()=>{ running=false; cancelAnimationFrame(raf); };
+  fig.addEventListener('pointermove',e=>{ const b=fig.getBoundingClientRect(); ptr={x:e.clientX-b.left,y:e.clientY-b.top}; });
+  fig.addEventListener('pointerleave',()=>{ ptr=null; });
+  fig.addEventListener('pointerdown',e=>{                      // жменя борошна з точки кліку
+    const b=fig.getBoundingClientRect(), x=e.clientX-b.left, y=e.clientY-b.top;
+    for(let i=0;i<70;i++){ const ang=rnd(-Math.PI*.97,-Math.PI*.03), sp=rnd(.8,4.6);
+      puffs.push({x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,r:rnd(.9,3.2),a:rnd(.6,1),ph:rnd(0,6.28),life:rnd(80,170)}); }
+  });
+  new ResizeObserver(size).observe(fig); size();
+  new IntersectionObserver(([e])=>{ e.isIntersecting&&!document.hidden?start():stop(); }).observe(fig);
+  document.addEventListener('visibilitychange',()=>{ document.hidden?stop():start(); });
+})();
 
 /* ---------- наїзд «Про нас» на hero ----------
    hero і «Про нас» — sticky top:0 в одному контейнері.
