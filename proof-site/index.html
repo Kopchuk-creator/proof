@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof. Пекарня і кав'ярня в Києві</title>
+<meta name="description" content="Свіжа випічка щодня з 5:00, кава від місцевої обсмажки і місце, де не хочеться поспішати. Концептуальний проєкт.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#140905;
+  --bg1:#1d0f08;
+  --bg2:#2a170e;
+  --bg3:#3a2216;
+  --bg4:#4f2f1e;
+  --text:#FFF4E8;
+  --soft:rgba(255,244,232,.66);
+  --faint:rgba(255,244,232,.38);
+  --line:rgba(255,244,232,.14);
+  --gold:#E9B567;
+  --amber:#C98A3B;
+  --font:'Manrope','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  --pad:clamp(20px,5vw,72px);
+  --gap:clamp(14px,3vw,40px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg1);color:var(--text);line-height:1.6;font-size:17px;overflow-x:hidden}
+img{display:block;width:100%;height:100%;object-fit:cover}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{padding-inline:var(--pad);max-width:1480px;margin-inline:auto}
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+h1,h2,h3{font-weight:800;letter-spacing:-.035em;line-height:.98}
+h2{font-size:clamp(2.4rem,6vw,5.2rem)}
+.gold{color:var(--gold)}
+.ph{position:relative;overflow:hidden;background:linear-gradient(135deg,#3a2216,#6b4021 55%,#c98a3b)}
+.ph img{transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.ph:hover img{transform:scale(1.04)}
+
+/* ---------- shared bits ---------- */
+.logo{font-weight:800;font-size:1.45rem;letter-spacing:-.04em;display:inline-flex;align-items:center;gap:9px}
+.logo i{font-style:normal;color:var(--gold)}
+.logo .mark{width:22px;height:22px;border-radius:50%;border:2px solid var(--gold);display:inline-block;position:relative}
+.logo .mark::after{content:"";position:absolute;left:50%;top:3px;bottom:3px;width:2px;margin-left:-1px;background:var(--gold);border-radius:2px;transform:rotate(18deg)}
+.links{display:flex;align-items:center;gap:clamp(18px,2.6vw,38px)}
+.links a{font-size:.9rem;font-weight:500;color:var(--soft);transition:color .2s}
+.links a:hover{color:var(--text)}
+.status{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600;border:1px solid rgba(255,244,232,.26);border-radius:99px;padding:7px 14px;white-space:nowrap;background:rgba(20,9,5,.18)}
+.dot{width:8px;height:8px;border-radius:50%;background:#9a8070}
+.status.open .dot{background:#8fd18f;box-shadow:0 0 0 4px rgba(143,209,143,.2)}
+.burger{display:none;width:42px;height:42px;position:relative}
+.burger span{position:absolute;left:9px;right:9px;height:2px;background:var(--text)}
+.burger span:nth-child(1){top:16px}.burger span:nth-child(2){top:25px}
+.right-tools{display:flex;align-items:center;gap:12px}
+
+/* ---------- HERO ---------- */
+.hero-wrap{position:relative;min-height:100svh;padding:0;isolation:isolate;overflow:hidden;
+  background:radial-gradient(120% 95% at 80% 8%,#dba24f 0%,#98602b 34%,#4d2b16 68%,#1d0f08 100%)}
+.bokeh{position:absolute;border-radius:50%;filter:blur(14px);pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(255,226,170,.55),rgba(255,226,170,0) 70%);animation:drift 14s ease-in-out infinite alternate}
+.k1{width:150px;height:150px;left:6%;top:8%}
+.k2{width:90px;height:90px;left:44%;top:70%;animation-delay:-4s}
+.k3{width:200px;height:200px;right:4%;bottom:2%;animation-delay:-8s}
+.k4{width:70px;height:70px;right:34%;top:6%;animation-delay:-2s}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(18px,-22px)}}
+.bean{position:absolute;color:#4b2713;pointer-events:none;animation:float 9s ease-in-out infinite alternate;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.bean.back{z-index:0}
+.bean.front{z-index:4}
+.bean.blur{filter:blur(3px) drop-shadow(0 8px 10px rgba(0,0,0,.3))}
+.bean.gold{color:#7a4a22}
+.b1{width:34px;left:3%;top:4%;transform:rotate(25deg)}
+.b2{width:26px;left:96%;top:12%;transform:rotate(-40deg);animation-delay:-3s}
+.b3{width:44px;left:92%;bottom:6%;transform:rotate(60deg);animation-delay:-5s}
+.b4{width:30px;left:1.5%;bottom:10%;transform:rotate(-15deg);animation-delay:-6s}
+.b5{width:38px;left:52%;top:2%;transform:rotate(110deg);animation-delay:-2s}
+.b6{width:60px;left:57%;bottom:8%;transform:rotate(-70deg);animation-delay:-7s}
+@keyframes float{from{translate:0 0;rotate:0deg}to{translate:6px -16px;rotate:14deg}}
+
+.card{position:relative;z-index:1;min-height:100svh;border-radius:0;
+  padding:clamp(20px,3vw,44px) var(--pad);display:flex;flex-direction:column;
+  background:linear-gradient(105deg,#1a0d07 0%,#2c180d 32%,#6a4020 62%,#c18640 100%);
+  box-shadow:none}
+.card::before{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(55% 45% at 86% 0%,rgba(255,232,190,.30),transparent 72%),radial-gradient(40% 40% at 0% 100%,rgba(0,0,0,.35),transparent 70%)}
+.topbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.hero-main{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:clamp(20px,4vw,60px);padding-block:clamp(24px,4vw,56px)}
+.hero-main h1{font-size:clamp(3rem,8.4vw,8.4rem);line-height:.94;letter-spacing:-.045em;font-weight:700}
+.hero-main p{max-width:340px;margin-top:clamp(18px,2.4vw,30px);font-size:.98rem;color:var(--soft)}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;background:var(--gold);color:var(--bg1);font-weight:700;font-size:.92rem;padding:14px 28px;border-radius:99px;transition:transform .25s,background .25s}
+.cta:hover{transform:translateY(-2px);background:#fff1d9}
+.card-bg{position:absolute;inset:0;border-radius:inherit;overflow:hidden;z-index:0;pointer-events:none}
+.bgslide{position:absolute;top:0;bottom:0;right:0;width:74%;opacity:0;transition:opacity 1.2s ease;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 34%);mask-image:linear-gradient(90deg,transparent 0%,#000 34%)}
+.bgslide.on{opacity:1}
+.bgslide video{display:block;width:100%;height:100%;object-fit:cover}
+.card-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(38% 48% at 84% 74%,rgba(20,9,5,.62),rgba(20,9,5,0) 72%),linear-gradient(90deg,rgba(20,9,5,.6) 0%,rgba(20,9,5,.18) 50%,rgba(20,9,5,0) 100%),linear-gradient(0deg,rgba(20,9,5,.7) 0%,rgba(20,9,5,0) 38%),linear-gradient(135deg,rgba(201,138,59,0) 40%,rgba(201,138,59,.3) 100%)}
+.pts{align-self:end;justify-self:end;width:min(100%,430px);border-top:1px solid rgba(255,244,232,.22)}
+.pt{display:grid;grid-template-columns:42px 1fr;gap:4px 12px;width:100%;text-align:left;padding:16px 0;border-bottom:1px solid rgba(255,244,232,.18);position:relative;color:var(--faint);transition:color .3s}
+.pt b{font-size:.85rem;font-weight:600;letter-spacing:.04em;padding-top:3px}
+.pt strong{font-size:1.2rem;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.pt small{grid-column:2;font-size:.85rem;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .4s;color:var(--soft)}
+.pt:hover{color:var(--text)}
+.pt:focus{outline:none}
+.pt:focus-visible{outline:1px solid var(--gold);outline-offset:6px;border-radius:4px}
+.pt.on{color:var(--text)}
+.pt.on b{color:var(--gold)}
+.pt.on small{max-height:40px;opacity:1}
+.pt::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--gold)}
+.pt.on::after{animation:fill var(--dur,5s) linear forwards}
+@keyframes fill{to{width:100%}}
+
+.hero-bottom{position:relative;z-index:3;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 40px}
+.play{display:inline-flex;align-items:center;gap:14px;font-size:.88rem;font-weight:600}
+.play .ring{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;transition:.3s}
+.play:hover .ring{background:var(--gold);color:var(--bg1)}
+.play svg{width:16px;height:16px}
+.soc{display:flex;gap:22px;font-size:.78rem;font-weight:600;color:var(--soft)}
+.soc a:hover{color:var(--gold)}
+.mouse{width:20px;height:32px;border:1.5px solid var(--gold);border-radius:12px;position:relative;opacity:.9}
+.mouse::after{content:"";position:absolute;left:50%;top:6px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--gold);animation:wheel 1.8s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
+
+/* ---------- sticky mini bar ---------- */
+.sticky{position:fixed;top:0;left:0;right:0;z-index:60;transform:translateY(-110%);transition:transform .4s cubic-bezier(.2,.7,.2,1);
+  background:rgba(20,9,5,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-block:12px}
+.sticky.show{transform:none}
+.sticky .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
+
+/* ---------- overlay nav (mobile) ---------- */
+.overlay{position:fixed;inset:0;z-index:90;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.overlay.open{opacity:1;visibility:visible}
+.overlay a{font-size:2rem;font-weight:700;letter-spacing:-.03em}
+.overlay a:hover{color:var(--gold)}
+.close{position:absolute;top:18px;right:18px;width:46px;height:46px;font-size:1.8rem;line-height:1}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(80px,12vw,170px)}
+.about{background:var(--bg2)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,7vw,110px);align-items:center}
+.about .ph{aspect-ratio:4/5;border-radius:28px}
+.about h2{margin-block:18px 30px}
+.about .lead{font-size:1.2rem;color:var(--soft);max-width:520px;margin-bottom:46px}
+.points{border-top:1px solid var(--line)}
+.point{display:grid;grid-template-columns:54px 1fr;gap:14px;padding:22px 0;border-bottom:1px solid var(--line)}
+.point span{font-weight:700;color:var(--gold);font-size:.9rem;padding-top:4px}
+.point h3{font-size:1.35rem;letter-spacing:-.02em;margin-bottom:4px;line-height:1.15}
+.point p{color:var(--soft);font-size:.98rem}
+
+.oven{background:var(--bg0)}
+.oven-head{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;margin-bottom:56px}
+.oven-head h2{margin-top:16px}
+.oven-head p{max-width:340px;color:var(--soft);font-size:.98rem}
+.slots{border-top:1px solid var(--line)}
+.slot{display:grid;grid-template-columns:clamp(90px,16vw,230px) 1fr auto;gap:18px;align-items:baseline;padding:clamp(20px,3vw,34px) 0;border-bottom:1px solid var(--line);color:var(--faint);transition:padding .3s}
+.slot .t{font-size:clamp(1.8rem,5.2vw,4.4rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.slot .n{font-size:clamp(1rem,1.7vw,1.35rem);font-weight:500}
+.slot .s{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.slot.done{color:var(--text)}
+.slot.done .t{color:var(--gold)}
+.slot.next{color:var(--text);padding-left:18px;background:linear-gradient(90deg,rgba(233,181,103,.18),transparent)}
+.slot.next .s{color:var(--gold)}
+.note{margin-top:30px;color:var(--faint);font-size:.92rem}
+
+.menu{background:var(--bg3)}
+.menu-head{display:flex;flex-wrap:wrap;gap:24px 60px;justify-content:space-between;align-items:flex-end;margin-bottom:46px}
+.menu-head h2{margin-top:16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:11px 22px;border-radius:99px;border:1px solid rgba(255,244,232,.28);font-weight:600;font-size:.9rem;transition:.2s}
+.tab:hover{border-color:var(--text)}
+.tab[aria-selected="true"]{background:var(--gold);border-color:var(--gold);color:var(--bg1)}
+.menu-body{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(30px,6vw,90px);align-items:start}
+.menu-body .ph{aspect-ratio:3/4;border-radius:28px;position:sticky;top:110px}
+.list{border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 24px;padding:20px 0;border-bottom:1px solid var(--line);animation:up .5s both}
+.item h3{font-size:1.25rem;letter-spacing:-.02em;line-height:1.2}
+.item .p{font-weight:800;font-size:1.15rem;white-space:nowrap;color:var(--gold)}
+.item p{grid-column:1;color:var(--soft);font-size:.95rem}
+.item small{grid-column:2;grid-row:2;text-align:right;color:var(--faint);font-weight:700;font-size:.74rem;letter-spacing:.08em;align-self:end}
+.menu-note{margin-top:22px;color:var(--faint);font-size:.88rem}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.gallery{background:linear-gradient(180deg,var(--bg2),var(--bg4))}
+.gallery h2{margin-block:16px 52px}
+.g-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:clamp(150px,19vw,290px);gap:16px}
+.g-grid .ph{border-radius:22px}
+.g1{grid-column:span 7;grid-row:span 2}
+.g2{grid-column:span 5}
+.g3{grid-column:span 5}
+.g4{grid-column:span 12;grid-row:span 2}
+.g-grid .gc{position:absolute;left:18px;bottom:16px;z-index:2;font-weight:600;font-size:.9rem;text-shadow:0 1px 14px rgba(0,0,0,.6)}
+.ph.shade::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,9,5,.6),transparent 48%)}
+
+.contacts{background:var(--bg0);padding-bottom:0}
+.c-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(36px,7vw,110px);align-items:end}
+.contacts h2{margin-block:16px 36px}
+.addr{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:22px}
+.copy{border:1px solid rgba(255,244,232,.35);border-radius:99px;padding:10px 20px;font-size:.88rem;font-weight:600;transition:.2s}
+.copy:hover{background:rgba(255,244,232,.1)}
+.hours{border-top:1px solid var(--line)}
+.hours div{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.hours span{color:var(--soft)}
+.hours b{font-weight:700}
+.clinks{display:flex;gap:26px;flex-wrap:wrap;margin-top:28px;font-weight:600}
+.clinks a{border-bottom:1px solid rgba(255,244,232,.35);padding-bottom:2px;transition:.2s}
+.clinks a:hover{color:var(--gold);border-color:var(--gold)}
+.mega{font-size:clamp(6rem,30vw,30rem);font-weight:800;letter-spacing:-.07em;line-height:.74;margin-top:clamp(50px,8vw,110px);color:var(--bg3);text-align:center;user-select:none;white-space:nowrap}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:26px;color:var(--faint);font-size:.82rem;border-top:1px solid rgba(255,244,232,.1)}
+
+.js .rv{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  body{font-size:16px}
+  .links.desk{display:none}
+  .burger{display:block}
+  .hero-main{grid-template-columns:1fr;text-align:left;padding-block:28px}
+  .pts{justify-self:stretch;width:100%}
+  .card-bg::after{background:linear-gradient(0deg,rgba(20,9,5,.92),rgba(20,9,5,.45))}
+  .bgslide{width:100%;-webkit-mask-image:none;mask-image:none}
+  .about-grid,.menu-body,.c-grid{grid-template-columns:1fr}
+  .about .ph{aspect-ratio:4/3}
+  .menu-body .ph{position:relative;top:0;aspect-ratio:4/3}
+  .slot{grid-template-columns:86px 1fr}
+  .slot .s{grid-column:2}
+  .g1,.g2,.g3,.g4{grid-column:span 12;grid-row:span 1}
+  .g1,.g4{grid-row:span 2}
+  .hero-bottom .mouse{display:none}
+  .topbar .status{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important}
+  .js .rv{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bean" viewBox="0 0 100 140">
+      <ellipse cx="50" cy="70" rx="42" ry="62" fill="currentColor"/>
+      <path d="M50 10C30 50 70 90 50 130" fill="none" stroke="rgba(0,0,0,.5)" stroke-width="7" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- sticky mini bar -->
+<div class="sticky" id="sticky">
+  <div class="wrap">
+    <a href="#top" class="logo"><span class="mark"></span>Proof<i>.</i></a>
+    <nav class="links desk">
+      <a href="#about">Про нас</a><a href="#oven">Піч</a><a href="#menu">Меню</a><a href="#gallery">Атмосфера</a><a href="#contacts">Контакти</a>
+    </nav>
+    <div class="right-tools">
+      <div class="status"><span class="dot"></span><span class="st-text">Перевіряємо години…</span></div>
+      <button class="burger" data-open aria-label="Меню"><span></span><span></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- overlay (mobile) -->
+<div class="overlay" id="overlay">
+  <button class="close" id="closeBtn" aria-label="Закрити">×</button>
+  <a href="#about">Про нас</a>
+  <a href="#oven">Піч</a>
+  <a href="#menu">Меню</a>
+  <a href="#gallery">Атмосфера</a>
+  <a href="#contacts">Контакти</a>
+  <div class="status"><span class="dot"></span><span class="st-text"></span></div>
+</div>
+
+<main>
+<!-- HERO -->
+<header class="hero-wrap" id="top">
+
+  <div class="card">
+    <div class="card-bg" aria-hidden="true">
+      <div class="bgslide on"><video muted autoplay loop playsinline preload="auto" poster="media/hero-1-coffee.jpg"><source src="media/hero-1-coffee.webm" type="video/webm"><source src="media/hero-1-coffee.mp4" type="video/mp4"></video></div>
+      <div class="bgslide"><video muted autoplay loop playsinline preload="auto" poster="media/hero-2-pastry.jpg"><source src="media/hero-2-pastry.webm" type="video/webm"><source src="media/hero-2-pastry.mp4" type="video/mp4"></video></div>
+      <div class="bgslide"><video muted autoplay loop playsinline preload="auto" poster="media/hero-3-bread.jpg"><source src="media/hero-3-bread.webm" type="video/webm"><source src="media/hero-3-bread.mp4" type="video/mp4"></video></div>
+    </div>
+    <div class="topbar">
+      <a href="#top" class="logo"><span class="mark"></span>Proof<i>.</i></a>
+      <nav class="links desk">
+        <a href="#about">Про нас</a><a href="#oven">Піч</a><a href="#menu">Меню</a><a href="#gallery">Атмосфера</a><a href="#contacts">Контакти</a>
+      </nav>
+      <div class="right-tools">
+        <div class="status"><span class="dot"></span><span class="st-text">Перевіряємо години…</span></div>
+        <button class="burger" data-open aria-label="Меню"><span></span><span></span></button>
+      </div>
+    </div>
+
+    <div class="hero-main">
+      <div>
+        <h1>Дай тісту<br><span class="gold">час.</span></h1>
+        <p>Пекарня і кав'ярня в центрі Києва. Випікаємо щоранку з 5:00, щоб до відкриття все було ще тепле.</p>
+        <a class="cta" href="#menu">Дивитися меню</a>
+      </div>
+
+      <div class="pts" id="pts">
+        <button class="pt on" data-i="0"><b>01</b><strong>Кава</strong><small>Зерно від місцевої обсмажки</small></button>
+        <button class="pt" data-i="1"><b>02</b><strong>Випічка</strong><small>24 шари масла, щойно з печі</small></button>
+        <button class="pt" data-i="2"><b>03</b><strong>Хліб на заквасці</strong><small>18 годин повільного тіста</small></button>
+      </div>
+    </div>
+
+    <div class="hero-bottom">
+      <a class="play" href="#oven">
+        <span class="ring"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v11M3 8.5 8 13.5l5-5"/></svg></span>
+        Розклад печі
+      </a>
+      <div class="soc"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Facebook</a></div>
+      <div class="mouse" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div class="ph rv">
+      <img loading="lazy" src="media/about.jpg" alt="Пекар розтягує тісто на заквасці" style="object-position:center 55%" onerror="this.style.display='none'">
+    </div>
+    <div class="rv">
+      <div class="eyebrow">Про нас</div>
+      <h2>Хліб не любить <span class="gold">поспіху.</span></h2>
+      <p class="lead">Proof почався з кухонної печі і закваски від бабусі. Спершу пекли для друзів, потім для сусідів, а одного ранку відкрили двері. Відтоді нічого не змінилося: тісто, час і добрі інгредієнти.</p>
+      <div class="points">
+        <div class="point"><span>01</span><div><h3>Повільне тісто</h3><p>Не прискорюємо те, що має дозріти. Смак з'являється саме там.</p></div></div>
+        <div class="point"><span>02</span><div><h3>Мало, але свіже</h3><p>У вітрині тільки те, що випекли сьогодні.</p></div></div>
+        <div class="point"><span>03</span><div><h3>Кава під випічку</h3><p>До кожної булочки підбираємо напій, з яким вона найсмачніша.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVEN -->
+<section class="oven" id="oven">
+  <div class="wrap">
+    <div class="oven-head rv">
+      <div>
+        <div class="eyebrow">Розклад печі</div>
+        <h2>Сьогодні<br>з печі</h2>
+      </div>
+      <p>Кожен день свій розклад. Що вже готове, підсвічено.</p>
+    </div>
+    <div class="slots rv" id="slots"></div>
+    <p class="note">Закінчується, то закінчується. Завтра випечемо знову.</p>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu-head rv">
+      <div>
+        <div class="eyebrow">Меню</div>
+        <h2>Коротке<br><span class="gold">навмисно.</span></h2>
+      </div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+    </div>
+    <div class="menu-body rv">
+      <div class="ph" id="menuPh">
+        <img id="menuImg" loading="lazy" src="media/menu-coffee.jpg" alt="Кава" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <div class="list" id="list" role="tabpanel"></div>
+        <p class="menu-note">Г глютен · М молоко · Я яйця · Ор горіхи · V веган. Рослинне молоко +20 ₴. Ціни вигадані для кейсу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="wrap">
+    <div class="eyebrow rv">Атмосфера</div>
+    <h2 class="rv">Місце, де не хочеться <span class="gold">поспішати</span></h2>
+    <div class="g-grid">
+      <div class="ph shade g1 rv"><img loading="lazy" src="media/gallery-1.jpg" alt="Вітрина з випічкою" onerror="this.style.display='none'"><span class="gc">Вітрина до обіду</span></div>
+      <div class="ph shade g2 rv"><img loading="lazy" src="media/gallery-2.jpg" alt="Спільний стіл з ноутбуком і кавою" onerror="this.style.display='none'"><span class="gc">Спільний стіл</span></div>
+      <div class="ph shade g3 rv"><img loading="lazy" src="media/gallery-3.jpg" alt="Совок з кавовими зернами" style="object-position:center 60%" onerror="this.style.display='none'"><span class="gc">Зерно від обсмажки</span></div>
+      <div class="ph shade g4 rv"><img loading="lazy" src="media/gallery-4.jpg" alt="Столик біля вікна ввечері" style="object-position:center 65%" onerror="this.style.display='none'"><span class="gc">Місце біля вікна</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- CONTACTS -->
+<footer class="contacts" id="contacts">
+  <div class="wrap">
+    <div class="c-grid">
+      <div class="rv">
+        <div class="eyebrow">Контакти</div>
+        <h2>Заходьте,<br>поки <span class="gold">тепле</span></h2>
+        <div class="addr" id="addr">Київ, вул. Хлібна, 7</div>
+        <button class="copy" id="copyBtn">Скопіювати адресу</button>
+        <div class="clinks">
+          <a href="tel:+380000000000">+380 00 000 00 00</a>
+          <a href="mailto:hello@proof.example">hello@proof.example</a>
+          <a href="#" aria-label="Instagram">Instagram</a>
+        </div>
+      </div>
+      <div class="hours rv">
+        <div><span>Пн–Пт</span><b>7:30 – 20:00</b></div>
+        <div><span>Сб–Нд</span><b>8:30 – 21:00</b></div>
+        <div><span>Піч розігріта</span><b>з 5:00</b></div>
+      </div>
+    </div>
+    <div class="mega" aria-hidden="true">Proof</div>
+    <div class="foot">
+      <span>© <span id="year">2026</span> Proof. Концептуальний проєкт, усі дані вигадані.</span>
+      <span>Фото: Unsplash (тимчасові)</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+
+/* ---------- дані ---------- */
+const HOURS = {wd:[7.5,20], we:[8.5,21]};
+const OVEN = [
+  {t:'07:30', n:'Круасани класичні і мигдальні'},
+  {t:'09:00', n:'Цинамон-роли та кардамонові булочки'},
+  {t:'11:30', n:'Хліб на заквасці'},
+  {t:'14:00', n:'Фокача з розмарином'},
+  {t:'16:30', n:'Кіш і тарти'}
+];
+const MENU = {
+  'Кава': {img:'media/menu-coffee.jpg', items:[
+    ['Еспресо','Насичений, з карамельним післясмаком',65,''],
+    ['Американо','Еспресо з гарячою водою',75,''],
+    ['Капучино','Класика з щільною молочною пінкою',95,'М'],
+    ['Флет вайт','Подвійний еспресо, оксамитове молоко',105,'М'],
+    ['Лате','М\'який і молочний',105,'М'],
+    ['Раф','Вершки, ваніль, кава',125,'М'],
+    ['Фільтр-кава','Чистий смак, зерно змінюємо щотижня',90,'V'],
+    ['Cold brew','Холодна екстракція 14 годин',110,'V']
+  ]},
+  'Випічка': {img:'media/menu-pastry.jpg', items:[
+    ['Круасан класичний','24 шари масла, хрусткий',85,'Г М'],
+    ['Круасан мигдальний','Мигдальний крем, пелюстки мигдалю',115,'Г М Я Ор'],
+    ['Пен-о-шоколя','Темний шоколад усередині',95,'Г М'],
+    ['Цинамон-рол','Кориця, вершковий крем',100,'Г М Я'],
+    ['Кардамонова булочка','Скандинавська, з цукровою скоринкою',90,'Г М Я'],
+    ['Слойка з вишнею','Вишня без зайвого цукру',85,'Г М'],
+    ['Фокача з розмарином','Оливкова олія, морська сіль',95,'Г V'],
+    ['Хліб на заквасці','Цілий, 18 годин бродіння',160,'Г V']
+  ]},
+  'Солоне': {img:'media/menu-savory.jpg', items:[
+    ['Кіш лорен','Бекон, сир, вершки',140,'Г М Я'],
+    ['Круасан з сиром і шинкою','Теплий, щойно з печі',175,'Г М'],
+    ['Тост з авокадо','Хліб на заквасці, яйце-пашот (до 12:00)',190,'Г Я'],
+    ['Сирники','Зі сметаною і ягідним соусом (до 12:00)',165,'М Я'],
+    ['Гранола з йогуртом','Домашня гранола, ягоди (до 12:00)',140,'Г М Ор']
+  ]},
+  'Десерти': {img:'media/menu-dessert.jpg', items:[
+    ['Баскський чізкейк','Підпалена скоринка, ніжний центр',150,'М Я'],
+    ['Лимонний тарт','Кисло-солодкий, на пісочному тісті',135,'Г М Я'],
+    ['Брауні','Темний шоколад',90,'Г М Я Ор'],
+    ['Тарт з грушею','Сезонний, з карамеллю',140,'Г М Я']
+  ]}
+};
+/* ---------- hero: відео-слайдер ---------- */
+// Усі три відео грають безперервно по колу (autoplay + loop).
+// Слайдер лише перемикає, яке з них видно, кожні SLIDE_MS мс.
+const SLIDE_MS=5000;
+const hero=document.getElementById('top');
+const bgEls=[...document.querySelectorAll('.bgslide')], ptEls=[...document.querySelectorAll('#pts .pt')];
+const vids=bgEls.map(s=>s.querySelector('video'));
+let cur=0, timer=null, heroVisible=true, blocked=false;
+function tryPlay(v){
+  v.muted=true; v.loop=true;
+  const p=v.play(); if(p&&p.catch) p.catch(()=>{ blocked=true; });
+}
+function playAll(){ vids.forEach(tryPlay); }
+function setSlide(i){
+  cur=i; clearTimeout(timer);
+  bgEls.forEach((s,k)=>s.classList.toggle('on',k===i));
+  ptEls.forEach(b=>b.classList.remove('on'));
+  const pt=ptEls[i]; pt.style.setProperty('--dur',(SLIDE_MS/1000)+'s'); void pt.offsetWidth; pt.classList.add('on');
+  const v=vids[i];
+  try{ v.currentTime=0; }catch(e){}          // нове відео стартує з початку
+  if(heroVisible){ if(v.paused) tryPlay(v); timer=setTimeout(next,SLIDE_MS); }
+}
+function next(){ setSlide((cur+1)%vids.length); }
+ptEls.forEach(b=>b.addEventListener('click',()=>setSlide(+b.dataset.i)));
+// якщо браузер заблокував автозапуск, запускаємо після першої дії людини
+['pointerdown','keydown','scroll','touchstart'].forEach(ev=>addEventListener(ev,()=>{
+  if(blocked){ blocked=false; playAll(); }
+},{passive:true}));
+// hero поза екраном: ставимо на паузу, щоб не вантажити телефон
+new IntersectionObserver(([e])=>{
+  heroVisible=e.isIntersecting;
+  if(!heroVisible){ clearTimeout(timer); vids.forEach(v=>v.pause()); }
+  else { playAll(); setSlide(cur); }
+},{threshold:.15}).observe(hero);
+playAll();
+setSlide(0);
+
+/* ---------- статус «відкрито» ---------- */
+function openRange(d){ return (d===0||d===6) ? HOURS.we : HOURS.wd; }
+function fmt(h){ const m=Math.round((h%1)*60); return Math.floor(h)+':'+String(m).padStart(2,'0'); }
+function updateStatus(){
+  const now=new Date(), d=now.getDay(), h=now.getHours()+now.getMinutes()/60;
+  const [o,c]=openRange(d); let text, open=false;
+  if(h>=o&&h<c){ open=true; text='Відкрито до '+fmt(c); }
+  else if(h<o){ text='Зачинено · відкриємось о '+fmt(o); }
+  else { text='Зачинено · завтра з '+fmt(openRange((d+1)%7)[0]); }
+  document.querySelectorAll('.status').forEach(el=>el.classList.toggle('open',open));
+  document.querySelectorAll('.st-text').forEach(el=>el.textContent=text);
+}
+
+/* ---------- розклад печі ---------- */
+function renderOven(){
+  const now=new Date(), h=now.getHours()+now.getMinutes()/60;
+  const box=document.getElementById('slots'); box.innerHTML='';
+  let nextFound=false;
+  OVEN.forEach(s=>{
+    const [hh,mm]=s.t.split(':').map(Number), v=hh+mm/60;
+    const row=document.createElement('div'); row.className='slot';
+    let label='Буде о '+s.t;
+    if(v<=h){ row.classList.add('done'); label='Вже готове'; }
+    else if(!nextFound){ row.classList.add('next'); label='Далі'; nextFound=true; }
+    row.innerHTML='<div class="t">'+s.t+'</div><div class="n">'+s.n+'</div><div class="s">'+label+'</div>';
+    box.appendChild(row);
+  });
+}
+
+/* ---------- меню з табами ---------- */
+const tabsEl=document.getElementById('tabs'), listEl=document.getElementById('list'), imgEl=document.getElementById('menuImg');
+function showCat(name){
+  [...tabsEl.children].forEach(b=>b.setAttribute('aria-selected', b.dataset.c===name));
+  const cat=MENU[name]; listEl.innerHTML='';
+  cat.items.forEach((it,i)=>{
+    const div=document.createElement('div'); div.className='item'; div.style.animationDelay=(i*40)+'ms';
+    div.innerHTML='<h3>'+it[0]+'</h3><span class="p">'+it[2]+' ₴</span><p>'+it[1]+'</p>'+(it[3]?'<small>'+it[3]+'</small>':'');
+    listEl.appendChild(div);
+  });
+  imgEl.style.display='';
+  imgEl.src=cat.img;
+  imgEl.alt=name;
+}
+Object.keys(MENU).forEach(name=>{
+  const b=document.createElement('button'); b.className='tab'; b.setAttribute('role','tab'); b.dataset.c=name; b.textContent=name;
+  b.addEventListener('click',()=>showCat(name)); tabsEl.appendChild(b);
+});
+showCat('Кава');
+
+/* ---------- sticky-бар і мобільне меню ---------- */
+const sticky=document.getElementById('sticky'), overlay=document.getElementById('overlay');
+function onScroll(){ sticky.classList.toggle('show', scrollY>innerHeight*.7); }
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+function setMenu(on){ overlay.classList.toggle('open',on); document.body.style.overflow=on?'hidden':''; }
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>setMenu(true)));
+document.getElementById('closeBtn').addEventListener('click',()=>setMenu(false));
+overlay.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+addEventListener('keydown',e=>{ if(e.key==='Escape') setMenu(false); });
+
+/* ---------- копіювання адреси ---------- */
+document.getElementById('copyBtn').addEventListener('click',function(){
+  const t=document.getElementById('addr').textContent, btn=this;
+  const done=()=>{btn.textContent='Скопійовано ✓'; setTimeout(()=>btn.textContent='Скопіювати адресу',1800);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); } else done();
+});
+
+/* ---------- поява блоків ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+document.getElementById('year').textContent=new Date().getFullYear();
+updateStatus(); renderOven();
+setInterval(()=>{updateStatus();renderOven();},60000);
+</script>
+</body>
+</html>
