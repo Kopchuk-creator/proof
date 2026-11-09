@@ -137,6 +137,15 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .overlay a:hover{color:var(--gold)}
 .close{position:absolute;top:18px;right:18px;width:46px;height:46px;font-size:1.8rem;line-height:1}
 
+/* ---------- наїзд «Про нас» на hero ---------- */
+/* клас .on вмикає JS лише коли рух дозволений і hero вміщується в екран */
+.stack.on{position:relative}
+.stack.on > .hero-wrap{position:sticky;top:0;height:var(--vhpx,100svh);min-height:0}
+.stack.on > .hero-wrap .card{min-height:var(--vhpx,100svh)}
+.stack.on > .about{position:sticky;top:0;z-index:2;margin-top:calc(-1 * var(--vhpx,100svh));min-height:var(--vhpx,100svh);
+  border-radius:48px 48px 0 0;transform:translate3d(0,var(--slide,100svh),0);will-change:transform;
+  box-shadow:0 -24px 60px rgba(0,0,0,.45)}
+
 /* ---------- sections ---------- */
 section{padding-block:clamp(80px,12vw,170px)}
 .about{background:var(--bg2)}
@@ -291,6 +300,7 @@ section{padding-block:clamp(80px,12vw,170px)}
 
 <main>
 <!-- HERO -->
+<div class="stack" id="stack">
 <header class="hero-wrap" id="top">
 
   <div class="card">
@@ -356,6 +366,7 @@ section{padding-block:clamp(80px,12vw,170px)}
     </div>
   </div>
 </section>
+</div>
 
 <!-- OVEN -->
 <section class="oven" id="oven">
@@ -514,11 +525,16 @@ ptEls.forEach(b=>b.addEventListener('click',()=>setSlide(+b.dataset.i)));
   if(blocked){ blocked=false; playAll(); }
 },{passive:true}));
 // hero поза екраном: ставимо на паузу, щоб не вантажити телефон
-new IntersectionObserver(([e])=>{
-  heroVisible=e.isIntersecting;
+// і коли «Про нас» повністю на нього наїхало
+let heroInView=true, heroCovered=false;
+function syncHero(){
+  const v=heroInView&&!heroCovered;
+  if(v===heroVisible) return;
+  heroVisible=v;
   if(!heroVisible){ clearTimeout(timer); vids.forEach(v=>v.pause()); }
   else { playAll(); setSlide(cur); }
-},{threshold:.15}).observe(hero);
+}
+new IntersectionObserver(([e])=>{ heroInView=e.isIntersecting; syncHero(); },{threshold:.15}).observe(hero);
 playAll();
 setSlide(0);
 
@@ -556,6 +572,46 @@ function drawFlow(){
 drawFlow();
 new ResizeObserver(drawFlow).observe(flowEl);
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawFlow);
+
+/* ---------- наїзд «Про нас» на hero ----------
+   hero і «Про нас» — sticky top:0 в одному контейнері. Поки обидва «прилипли»,
+   у нас 2 екрани прокрутки; на останніх 33% «Про нас» виїжджає знизу (translateY 100vh → 0). */
+const stackEl=document.getElementById('stack'), aboutEl=document.getElementById('about');
+const motionOK=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+let stackTick=false;
+function layoutStack(){
+  if(!motionOK) return;
+  const vh=innerHeight;
+  stackEl.style.setProperty('--vhpx',vh+'px');
+  stackEl.classList.add('on');
+  // якщо вміст hero не вміщується в екран (дуже низький телефон) — без ефекту
+  const card=hero.querySelector('.card');
+  if(card.scrollHeight>vh+2){
+    stackEl.classList.remove('on'); stackEl.style.height=''; heroCovered=false; syncHero(); return;
+  }
+  stackEl.style.height=(2*vh+aboutEl.offsetHeight)+'px';   // = 300vh, якщо «Про нас» висотою з екран
+  updateStack();
+}
+function updateStack(){
+  stackTick=false;
+  if(!stackEl.classList.contains('on')) return;
+  const vh=innerHeight, scrolled=-stackEl.getBoundingClientRect().top;
+  const range=2*vh, start=range*0.67;                       // останні 33% прокрутки
+  const t=Math.min(1,Math.max(0,(scrolled-start)/(range-start)));
+  aboutEl.style.setProperty('--slide',((1-t)*vh).toFixed(1)+'px');
+  heroCovered=t>=1; syncHero();
+}
+addEventListener('scroll',()=>{ if(!stackTick){ stackTick=true; requestAnimationFrame(updateStack); } },{passive:true});
+addEventListener('resize',layoutStack);
+new ResizeObserver(layoutStack).observe(aboutEl);
+layoutStack();
+// посилання «Про нас» ведуть у момент, коли секція вже повністю наїхала
+document.querySelectorAll('a[href="#about"]').forEach(a=>a.addEventListener('click',e=>{
+  if(!stackEl.classList.contains('on')) return;
+  e.preventDefault();
+  const y=stackEl.getBoundingClientRect().top+scrollY+2*innerHeight;
+  scrollTo({top:y,behavior:motionOK?'smooth':'auto'});
+}));
 
 /* ---------- статус «відкрито» ---------- */
 function openRange(d){ return (d===0||d===6) ? HOURS.we : HOURS.wd; }
@@ -608,7 +664,12 @@ showCat('Кава');
 
 /* ---------- sticky-бар і мобільне меню ---------- */
 const sticky=document.getElementById('sticky'), overlay=document.getElementById('overlay');
-function onScroll(){ sticky.classList.toggle('show', scrollY>innerHeight*.7); }
+function onScroll(){
+  // поки hero «прилип» і «Про нас» ще не доїхало догори, у hero вже є своє меню
+  const st=document.getElementById('stack');
+  const limit=(st&&st.classList.contains('on')) ? st.getBoundingClientRect().top+scrollY+2*innerHeight-90 : innerHeight*.7;
+  sticky.classList.toggle('show', scrollY>limit);
+}
 addEventListener('scroll',onScroll,{passive:true}); onScroll();
 function setMenu(on){ overlay.classList.toggle('open',on); document.body.style.overflow=on?'hidden':''; }
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>setMenu(true)));
