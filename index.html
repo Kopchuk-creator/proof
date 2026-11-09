@@ -574,10 +574,11 @@ new ResizeObserver(drawFlow).observe(flowEl);
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawFlow);
 
 /* ---------- наїзд «Про нас» на hero ----------
-   hero і «Про нас» — sticky top:0 в одному контейнері. Поки обидва «прилипли»,
-   у нас 2 екрани прокрутки; на останніх 33% «Про нас» виїжджає знизу (translateY 100vh → 0). */
+   hero і «Про нас» — sticky top:0 в одному контейнері.
+   «Про нас» виїжджає знизу одразу з першої прокрутки й повністю накриває hero за SLIDE_SCREENS екрана. */
 const stackEl=document.getElementById('stack'), aboutEl=document.getElementById('about');
 const motionOK=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SLIDE_SCREENS=1;   // скільки екранів прокрутки триває наїзд
 let stackTick=false;
 function layoutStack(){
   if(!motionOK) return;
@@ -589,15 +590,14 @@ function layoutStack(){
   if(card.scrollHeight>vh+2){
     stackEl.classList.remove('on'); stackEl.style.height=''; heroCovered=false; syncHero(); return;
   }
-  stackEl.style.height=(2*vh+aboutEl.offsetHeight)+'px';   // = 300vh, якщо «Про нас» висотою з екран
+  stackEl.style.height=(SLIDE_SCREENS*vh+aboutEl.offsetHeight)+'px';
   updateStack();
 }
 function updateStack(){
   stackTick=false;
   if(!stackEl.classList.contains('on')) return;
   const vh=innerHeight, scrolled=-stackEl.getBoundingClientRect().top;
-  const range=2*vh, start=range*0.67;                       // останні 33% прокрутки
-  const t=Math.min(1,Math.max(0,(scrolled-start)/(range-start)));
+  const t=Math.min(1,Math.max(0,scrolled/(SLIDE_SCREENS*vh)));
   aboutEl.style.setProperty('--slide',((1-t)*vh).toFixed(1)+'px');
   heroCovered=t>=1; syncHero();
 }
@@ -609,7 +609,7 @@ layoutStack();
 document.querySelectorAll('a[href="#about"]').forEach(a=>a.addEventListener('click',e=>{
   if(!stackEl.classList.contains('on')) return;
   e.preventDefault();
-  const y=stackEl.getBoundingClientRect().top+scrollY+2*innerHeight;
+  const y=stackEl.getBoundingClientRect().top+scrollY+SLIDE_SCREENS*innerHeight;
   scrollTo({top:y,behavior:motionOK?'smooth':'auto'});
 }));
 
@@ -667,7 +667,7 @@ const sticky=document.getElementById('sticky'), overlay=document.getElementById(
 function onScroll(){
   // поки hero «прилип» і «Про нас» ще не доїхало догори, у hero вже є своє меню
   const st=document.getElementById('stack');
-  const limit=(st&&st.classList.contains('on')) ? st.getBoundingClientRect().top+scrollY+2*innerHeight-90 : innerHeight*.7;
+  const limit=(st&&st.classList.contains('on')) ? st.getBoundingClientRect().top+scrollY+SLIDE_SCREENS*innerHeight-90 : innerHeight*.7;
   sticky.classList.toggle('show', scrollY>limit);
 }
 addEventListener('scroll',onScroll,{passive:true}); onScroll();
