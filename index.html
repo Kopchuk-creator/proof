@@ -285,23 +285,78 @@ section{padding-block:clamp(80px,12vw,170px)}
 }
 
 
-.menu{background:var(--bg3)}
-.menu-head{display:flex;flex-wrap:wrap;gap:24px 60px;justify-content:space-between;align-items:flex-end;margin-bottom:46px}
-.menu-head h2{margin-top:16px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{padding:11px 22px;border-radius:99px;border:1px solid rgba(255,244,232,.28);font-weight:600;font-size:.9rem;transition:.2s}
-.tab:hover{border-color:var(--text)}
-.tab[aria-selected="true"]{background:var(--gold);border-color:var(--gold);color:var(--bg1)}
-.menu-body{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(30px,6vw,90px);align-items:start}
-.menu-body .ph{aspect-ratio:3/4;border-radius:28px;position:sticky;top:110px}
-.list{border-top:1px solid var(--line)}
-.item{display:grid;grid-template-columns:1fr auto;gap:4px 24px;padding:20px 0;border-bottom:1px solid var(--line);animation:up .5s both}
-.item h3{font-size:1.25rem;letter-spacing:-.02em;line-height:1.2}
-.item .p{font-weight:800;font-size:1.15rem;white-space:nowrap;color:var(--gold)}
-.item p{grid-column:1;color:var(--soft);font-size:.95rem}
-.item small{grid-column:2;grid-row:2;text-align:right;color:var(--faint);font-weight:700;font-size:.74rem;letter-spacing:.08em;align-self:end}
-.menu-note{margin-top:22px;color:var(--faint);font-size:.88rem}
-@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* ===================== МЕНЮ ===================== */
+.menu{background:var(--bg3);padding-block:clamp(80px,10vw,150px)}
+.menu-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px 60px}
+.menu-top h2{margin-top:16px}
+
+/* категорії — великий друкований «зміст»: активна яскрава, інші приглушені */
+.cats{display:flex;justify-content:space-between;gap:clamp(18px,3vw,44px);margin-top:clamp(40px,5vw,64px);padding-bottom:22px;border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cats::-webkit-scrollbar{display:none}
+.cat{position:relative;flex:none;font-size:clamp(1.9rem,4.2vw,3.6rem);font-weight:800;letter-spacing:-.045em;line-height:1;
+  color:rgba(255,244,232,.3);transition:color .3s;padding:4px 0}
+.cat:hover{color:rgba(255,244,232,.6)}
+.cat[aria-selected="true"]{color:var(--text)}
+.cat[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:3px;background:var(--gold);border-radius:3px}
+.cat:focus{outline:none}
+.cat:focus-visible{outline:1px solid var(--gold);outline-offset:6px;border-radius:4px}
+
+.menu-body{display:grid;grid-template-columns:5fr 7fr;gap:clamp(32px,5vw,88px);align-items:start;margin-top:clamp(36px,4vw,56px)}
+
+/* фото категорії: нове «відкривається шторкою» поверх попереднього */
+.m-photo{position:sticky;top:100px;aspect-ratio:4/5;border-radius:28px;overflow:hidden;background:linear-gradient(135deg,#3a2216,#6b4021 55%,#c98a3b)}
+.m-photo img{position:absolute;inset:0}
+.m-photo img.in{animation:wipe .8s cubic-bezier(.7,0,.2,1) both}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.m-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,9,5,.72) 0%,rgba(20,9,5,0) 45%);pointer-events:none;z-index:1}
+.m-cat{position:absolute;left:clamp(20px,2.4vw,32px);bottom:clamp(16px,2vw,26px);z-index:2;font-size:clamp(2.2rem,4vw,3.6rem);font-weight:800;letter-spacing:-.05em;line-height:1}
+
+/* список: назва ····· ціна, під нею опис і алергени */
+.m-list{list-style:none}
+.m-item{padding:20px 0;border-bottom:1px solid var(--line);transition:opacity .35s}
+.m-item:first-child{padding-top:4px}
+.m-row{display:flex;align-items:baseline;gap:14px}
+.m-name{font-size:clamp(1.15rem,1.5vw,1.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;transition:color .25s}
+.m-dots{flex:1;min-width:24px;height:.8em;background:radial-gradient(circle,rgba(255,244,232,.32) 1.1px,transparent 1.6px) left bottom/9px 4px repeat-x}
+.m-price{font-size:clamp(1.15rem,1.5vw,1.4rem);font-weight:800;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+.m-sub{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:6px}
+.m-desc{color:var(--soft);font-size:.96rem}
+.m-tags{display:flex;gap:6px;flex:none}
+.m-tag{min-width:26px;height:26px;padding:0 6px;border-radius:99px;border:1px solid rgba(255,244,232,.24);display:inline-grid;place-items:center;
+  font-size:.7rem;font-weight:700;color:var(--soft);transition:background .25s,color .25s,border-color .25s}
+.m-item:hover .m-name{color:var(--gold)}
+.m-list.enter .m-item{animation:rowin .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*45ms)}
+@keyframes rowin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+/* підсвічування за алергеном */
+.m-list.marking .m-item{opacity:.28}
+.m-list.marking .m-item.hit{opacity:1}
+.m-tag.on{background:var(--gold);border-color:var(--gold);color:var(--bg1)}
+
+/* розшифровка алергенів — кнопки */
+.m-key{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.m-key button{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:99px;border:1px solid var(--line);font-size:.88rem;color:var(--soft);transition:.25s}
+.m-key button b{min-width:26px;height:26px;padding:0 6px;border-radius:99px;display:inline-grid;place-items:center;font-size:.7rem;border:1px solid rgba(255,244,232,.24);color:var(--text)}
+.m-key button:hover{border-color:rgba(233,181,103,.5);color:var(--text)}
+.m-key button[aria-pressed="true"]{border-color:var(--gold);color:var(--text);background:rgba(233,181,103,.12)}
+.m-key button[aria-pressed="true"] b{background:var(--gold);border-color:var(--gold);color:var(--bg1)}
+.m-key button:focus{outline:none}
+.m-key button:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+.m-note{margin-top:14px;color:var(--faint);font-size:.88rem}
+
+/* меню: телефон і зменшений рух */
+@media(max-width:900px){
+  .m-photo{position:relative;top:0;aspect-ratio:4/3}
+}
+@media(max-width:640px){
+  .cats{justify-content:flex-start}          /* на вузькому екрані — гортаються вбік */
+}
+@media(max-width:520px){
+  .m-sub{flex-direction:column;align-items:flex-start;gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .m-photo img.in,.m-list.enter .m-item{animation:none}
+}
 
 .gallery{background:linear-gradient(180deg,var(--bg2),var(--bg4))}
 .gallery h2{margin-block:16px 52px}
@@ -345,7 +400,6 @@ section{padding-block:clamp(80px,12vw,170px)}
   .about-photo{position:relative;top:0;aspect-ratio:4/3}
   .braid{padding-left:68px}
   .braid-svg{width:44px}
-  .menu-body .ph{position:relative;top:0;aspect-ratio:4/3}
   .g1,.g2,.g3,.g4{grid-column:span 12;grid-row:span 1}
   .g1,.g4{grid-row:span 2}
   .hero-bottom .mouse{display:none}
@@ -513,20 +567,22 @@ section{padding-block:clamp(80px,12vw,170px)}
 <!-- MENU -->
 <section class="menu" id="menu">
   <div class="wrap">
-    <div class="menu-head rv">
+    <div class="menu-top">
       <div>
         <div class="eyebrow">Меню</div>
-        <h2>Коротке<br><span class="gold">навмисно.</span></h2>
+        <h2>Що візьмеш<br><span class="gold">до кави?</span></h2>
       </div>
-      <div class="tabs" role="tablist" id="tabs"></div>
     </div>
-    <div class="menu-body rv">
-      <div class="ph" id="menuPh">
-        <img id="menuImg" loading="lazy" src="media/menu-coffee.jpg" alt="Кава" onerror="this.style.display='none'">
+    <div class="cats" role="tablist" id="cats" aria-label="Категорії меню"></div>
+    <div class="menu-body">
+      <div class="m-photo" id="mPhoto">
+        <img id="mImg" loading="lazy" src="media/menu-coffee.jpg" alt="Кава" onerror="this.style.display='none'">
+        <span class="m-cat" id="mCat">Кава</span>
       </div>
       <div>
-        <div class="list" id="list" role="tabpanel"></div>
-        <p class="menu-note">Г глютен · М молоко · Я яйця · Ор горіхи · V веган. Рослинне молоко +20 ₴. Ціни вигадані для кейсу.</p>
+        <ul class="m-list" id="mList" role="tabpanel" aria-labelledby="cat-0"></ul>
+        <div class="m-key" id="mKey"></div>
+        <p class="m-note">Рослинне молоко +20 ₴. Ціни вигадані для кейсу.</p>
       </div>
     </div>
   </div>
@@ -945,25 +1001,76 @@ addEventListener('resize',render);
 return render;
 })();
 
-/* ---------- меню з табами ---------- */
-const tabsEl=document.getElementById('tabs'), listEl=document.getElementById('list'), imgEl=document.getElementById('menuImg');
-function showCat(name){
-  [...tabsEl.children].forEach(b=>b.setAttribute('aria-selected', b.dataset.c===name));
-  const cat=MENU[name]; listEl.innerHTML='';
-  cat.items.forEach((it,i)=>{
-    const div=document.createElement('div'); div.className='item'; div.style.animationDelay=(i*40)+'ms';
-    div.innerHTML='<h3>'+it[0]+'</h3><span class="p">'+it[2]+' ₴</span><p>'+it[1]+'</p>'+(it[3]?'<small>'+it[3]+'</small>':'');
-    listEl.appendChild(div);
+/* ---------- меню: категорії, фото-шторка, список, алергени ---------- */
+(()=>{
+  const KEY=[['Г','глютен'],['М','молоко'],['Я','яйця'],['Ор','горіхи'],['V','веган']];
+  const catsEl=document.getElementById('cats'), listEl=document.getElementById('mList'), keyEl=document.getElementById('mKey');
+  const photo=document.getElementById('mPhoto'), catLabel=document.getElementById('mCat');
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const names=Object.keys(MENU);
+  let cur=null, mark=null, enterT=0;
+
+  // категорії
+  const catBtns=names.map((n,i)=>{
+    const b=document.createElement('button'); b.className='cat'; b.type='button'; b.id='cat-'+i;
+    b.setAttribute('role','tab'); b.setAttribute('aria-controls','mList');
+    b.textContent=n;
+    b.addEventListener('click',()=>show(n));
+    b.addEventListener('keydown',e=>{                                        // стрілки між категоріями
+      if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft') return;
+      const k=(i+(e.key==='ArrowRight'?1:-1)+names.length)%names.length; catBtns[k].focus(); show(names[k]);
+    });
+    catsEl.appendChild(b); return b;
   });
-  imgEl.style.display='';
-  imgEl.src=cat.img;
-  imgEl.alt=name;
-}
-Object.keys(MENU).forEach(name=>{
-  const b=document.createElement('button'); b.className='tab'; b.setAttribute('role','tab'); b.dataset.c=name; b.textContent=name;
-  b.addEventListener('click',()=>showCat(name)); tabsEl.appendChild(b);
-});
-showCat('Кава');
+
+  // розшифровка алергенів — кнопки, що підсвічують страви
+  const keyBtns=KEY.map(([c,label])=>{
+    const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-pressed','false');
+    b.innerHTML='<b>'+c+'</b>'+label;
+    b.addEventListener('click',()=>{ mark= mark===c ? null : c; applyMark(); });
+    keyEl.appendChild(b); return [c,b];
+  });
+
+  function applyMark(){
+    keyBtns.forEach(([c,b])=>b.setAttribute('aria-pressed',String(mark===c)));
+    listEl.classList.toggle('marking',!!mark);
+    listEl.querySelectorAll('.m-item').forEach(li=>{
+      const tags=li.dataset.tags.split(' ').filter(Boolean);
+      li.classList.toggle('hit',!!mark&&tags.includes(mark));
+      li.querySelectorAll('.m-tag').forEach(t=>t.classList.toggle('on',t.textContent===mark));
+    });
+  }
+
+  function show(name){
+    if(name===cur) return;
+    const first=cur===null; cur=name; const cat=MENU[name];
+    catBtns.forEach((b,i)=>b.setAttribute('aria-selected',String(names[i]===name)));
+    listEl.setAttribute('aria-labelledby','cat-'+names.indexOf(name));
+    catLabel.textContent=name;
+    // фото: нове відкривається шторкою поверх старого
+    const old=photo.querySelector('img:not(.out)');
+    if(first){ old.src=cat.img; old.alt=name; }
+    else{
+      const img=new Image(); img.alt=name; img.src=cat.img; img.onerror=()=>img.remove();
+      img.className=calm?'':'in'; photo.insertBefore(img,catLabel);
+      const done=()=>{ photo.querySelectorAll('img').forEach(x=>{ if(x!==img) x.remove(); }); };
+      calm?done():img.addEventListener('animationend',done,{once:true});
+    }
+    // список
+    listEl.innerHTML=cat.items.map(([n,d,p,t],i)=>
+      '<li class="m-item" style="--i:'+i+'" data-tags="'+t+'">'+
+        '<div class="m-row"><span class="m-name">'+n+'</span><span class="m-dots" aria-hidden="true"></span><span class="m-price">'+p+' ₴</span></div>'+
+        '<div class="m-sub"><span class="m-desc">'+d+'</span>'+
+          (t?'<span class="m-tags">'+t.split(' ').map(x=>'<span class="m-tag">'+x+'</span>').join('')+'</span>':'')+
+        '</div></li>').join('');
+    if(!first&&!calm){
+      listEl.classList.remove('enter'); void listEl.offsetWidth; listEl.classList.add('enter');
+      clearTimeout(enterT); enterT=setTimeout(()=>listEl.classList.remove('enter'),cat.items.length*45+560);   // інакше анімація перебиває приглушення
+    }
+    applyMark();
+  }
+  show(names[0]);
+})();
 
 /* ---------- sticky-бар і мобільне меню ---------- */
 const sticky=document.getElementById('sticky'), overlay=document.getElementById('overlay');
