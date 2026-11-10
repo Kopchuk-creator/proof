@@ -148,20 +148,20 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 
 /* ---------- sections ---------- */
 section{padding-block:clamp(80px,12vw,170px)}
-.about{background:var(--bg2)}
+.about{background:var(--bg2);padding-block:clamp(72px,8vw,120px)}
 /* «Про нас»: велике фото, що «прилипає», і плетінка з двох ниток тіста, яка зв'язує три принципи */
-.about-grid{display:grid;grid-template-columns:5fr 7fr;gap:clamp(40px,6vw,104px);align-items:start}
+.about-grid{display:grid;grid-template-columns:5fr 7fr;gap:clamp(40px,5vw,88px);align-items:center}
 .about-photo{position:sticky;top:96px;margin:0;aspect-ratio:4/5;border-radius:28px;overflow:hidden;
   background:linear-gradient(135deg,#3a2216,#6b4021 55%,#c98a3b)}
-.about-photo img{width:100%;height:100%;object-fit:cover;transform:scale(var(--pz,1)) translate3d(0,var(--py,0px),0);transform-origin:50% 60%}
+.about-photo img{width:100%;height:100%;object-fit:cover;transform:scale(var(--pz,1)) translate3d(0,var(--py,0px),0);transform-origin:50% 50%}
 /* фото «розтягується» під час наїзду + борошно над ним */
 .about-photo.stretch{clip-path:inset(var(--pi-y,0%) var(--pi-x,0%) round 28px)}
 .about-photo.stretch img{will-change:transform}
 .flour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .about-photo.stretch{cursor:pointer}
-.about-copy h2{font-size:clamp(3rem,6.4vw,6.6rem);line-height:.92;letter-spacing:-.05em;margin-block:20px 36px;text-wrap:balance}
-.about .lead{font-size:clamp(1.1rem,1.35vw,1.3rem);line-height:1.65;color:var(--soft);max-width:36ch}
-.braid{position:relative;margin-top:clamp(64px,8vw,112px);padding-left:92px;display:grid;gap:clamp(56px,7vw,96px)}
+.about-copy h2{font-size:clamp(3rem,5.6vw,6rem);line-height:.92;letter-spacing:-.05em;margin-block:16px 28px;text-wrap:balance}
+.about .lead{font-size:clamp(1.1rem,1.3vw,1.25rem);line-height:1.65;color:var(--soft)}
+.braid{position:relative;margin-top:clamp(40px,4vw,56px);padding-left:84px;display:grid;gap:clamp(26px,2.6vw,38px)}
 .braid-svg{position:absolute;left:0;top:0;width:56px;height:100%;overflow:visible;pointer-events:none}
 .braid-svg .strand-a{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round}
 .braid-svg .strand-b{fill:none;stroke:var(--amber);stroke-width:5;stroke-linecap:round}
@@ -169,8 +169,8 @@ section{padding-block:clamp(80px,12vw,170px)}
 .braid-svg .knot{fill:var(--gold);stroke:var(--bg2);stroke-width:4}
 .braid-svg .knot-ring{fill:none;stroke:var(--gold);stroke-width:1.5;opacity:.5}
 .tenet{transition:opacity .5s ease}
-.tenet h3{font-size:clamp(1.4rem,2.1vw,1.85rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:10px}
-.tenet p{color:var(--soft);max-width:40ch}
+.tenet h3{font-size:clamp(1.3rem,1.7vw,1.6rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:6px}
+.tenet p{color:var(--soft)}
 .braid.live .tenet{opacity:.35}
 .braid.live .tenet.lit{opacity:1}
 
@@ -556,7 +556,7 @@ function drawBraid(){
   const y0=knotYs[0]-Math.min(150,knotYs[0]+mt-28);              // трохи вище першого принципу, але не на текст над ним
   braidTop=y0;
   const ys=[y0]; let prev=y0;
-  knotYs.forEach(k=>{const n=Math.max(1,Math.round((k-prev)/110));for(let j=1;j<=n;j++) ys.push(prev+(k-prev)*j/n); prev=k;});
+  knotYs.forEach(k=>{const n=Math.max(1,Math.round((k-prev)/95));for(let j=1;j<=n;j++) ys.push(prev+(k-prev)*j/n); prev=k;});
   const yEnd=knotYs.at(-1);
   const amp=y=>A*Math.min(1,(y-y0)/90,(yEnd-y)/40+0.35);          // плавне звуження на початку й у кінці
   const seg=(ya,yb,s)=>{let d='';const h=yb-ya;for(let y=0;y<=h;y+=3){const Y=ya+y,x=cx+s*amp(Y)*Math.sin(Math.PI*y/h);d+=(y?'L':'M')+x.toFixed(1)+' '+Y.toFixed(1);}return d+'L'+cx+' '+yb.toFixed(1);};
@@ -577,7 +577,7 @@ function updateBraid(){
   if(!braidMotion){ tenetEls.forEach(t=>t.classList.add('lit')); return; }
   braidEl.classList.add('live');
   const top=braidEl.getBoundingClientRect().top;
-  const reach=Math.max(braidTop,Math.min(braidH+20,innerHeight*0.72-top));   // плетінка доходить до 72% висоти екрана
+  const reach=Math.max(braidTop,Math.min(braidH+20,innerHeight*0.92-top));   // плетінка доходить майже до низу екрана
   const r=document.getElementById('braidReveal'); if(r) r.setAttribute('height',reach-braidTop+10);
   tenetEls.forEach((t,i)=>t.classList.toggle('lit',reach>=knotYs[i]-4));
 }
@@ -607,11 +607,11 @@ drawBraid();
     const e=1-Math.pow(1-p,2);                                   // м'яке сповільнення в кінці
     fig.style.setProperty('--pi-y',(16*(1-e)).toFixed(2)+'%');
     fig.style.setProperty('--pi-x',(11*(1-e)).toFixed(2)+'%');
-    fig.style.setProperty('--pz',(1.22-0.22*e).toFixed(4));
+    fig.style.setProperty('--pz',(1.24-0.18*e).toFixed(4));       // лишаємо запас 6%, щоб паралакс не відкривав край
     // після приземлення — легкий паралакс усередині рамки
-    const r=fig.getBoundingClientRect();
-    const drift=Math.max(-1,Math.min(1,(r.top+r.height/2-innerHeight/2)/innerHeight));
-    fig.style.setProperty('--py',(drift*-18).toFixed(1)+'px');
+    const fh=fig.offsetHeight;
+    const drift=Math.max(-1,Math.min(1,(figTop+fh/2-vh/2)/vh));
+    fig.style.setProperty('--py',(drift*-14).toFixed(1)+'px');   // зсув менший за запас масштабу — краї не відкриваються
   }
   addEventListener('scroll',()=>{ if(!tick){ tick=true; requestAnimationFrame(stretch); } },{passive:true});
   addEventListener('resize',stretch); stretch();
@@ -685,6 +685,7 @@ function updateStack(){
   const t=Math.min(1,Math.max(0,scrolled/(SLIDE_SCREENS*vh)));
   aboutEl.style.setProperty('--slide',((1-t)*vh).toFixed(1)+'px');
   heroCovered=t>=1; syncHero();
+  updateBraid();            // плетінка рахує позицію вже після зсуву секції
 }
 addEventListener('scroll',()=>{ if(!stackTick){ stackTick=true; requestAnimationFrame(updateStack); } },{passive:true});
 addEventListener('resize',layoutStack);
