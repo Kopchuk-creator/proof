@@ -48,6 +48,12 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .links{display:flex;align-items:center;gap:clamp(18px,2.6vw,38px)}
 .links a{font-size:.9rem;font-weight:500;color:var(--soft);transition:color .2s}
 .links a:hover{color:var(--text)}
+/* підкреслення в хедері: золота лінія 1.5px «пишеться» зліва направо, а йдучи — тікає вправо */
+.links a{position:relative;padding-block:4px}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1.5px;border-radius:2px;background:var(--gold);
+  transform:scaleX(0);transform-origin:right;transition:transform .3s ease}
+.links a:hover::after,.links a.cur::after{transform:scaleX(1);transform-origin:left}
+.links a.cur{color:var(--text)}
 .status{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600;border:1px solid rgba(255,244,232,.26);border-radius:99px;padding:7px 14px;white-space:nowrap;background:rgba(20,9,5,.18)}
 .dot{width:8px;height:8px;border-radius:50%;background:#9a8070}
 .status.open .dot{background:#8fd18f;box-shadow:0 0 0 4px rgba(143,209,143,.2)}
@@ -89,8 +95,28 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .hero-main{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:clamp(20px,4vw,60px);padding-block:clamp(24px,4vw,56px)}
 .hero-main h1{font-size:clamp(3rem,8.4vw,8.4rem);line-height:.94;letter-spacing:-.045em;font-weight:700}
 .hero-main p{max-width:340px;margin-top:clamp(18px,2.4vw,30px);font-size:.98rem;color:var(--soft)}
-.cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;background:var(--gold);color:var(--bg1);font-weight:700;font-size:.92rem;padding:14px 28px;border-radius:99px;transition:transform .25s,background .25s}
-.cta:hover{transform:translateY(-2px);background:#fff1d9}
+.cta{display:inline-flex;align-items:center;gap:16px;margin-top:26px;background:var(--gold);color:var(--bg1);font-weight:700;font-size:.92rem;
+  padding:7px 7px 7px 26px;border-radius:99px}
+.cta-ic{flex:none;position:relative;width:42px;height:42px;border-radius:50%;background:var(--bg1);color:var(--gold);overflow:hidden}
+.cta-ic svg{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px 0 0 -8.5px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .55s cubic-bezier(.7,0,.2,1)}
+.cta-ic svg+svg{transform:translateY(-260%)}
+/* наведення: кнопка ледь підстрибує, а стрілка прокручується вниз — одна виїжджає, наступна заїжджає зверху */
+.cta:hover{animation:ctaHop .7s 1}
+.cta:hover .cta-ic svg{transform:translateY(260%)}
+.cta:hover .cta-ic svg+svg{transform:none}
+@keyframes ctaHop{
+  0%  {transform:none;animation-timing-function:cubic-bezier(.3,.7,.4,1)}
+  35% {transform:translateY(-5px);animation-timing-function:cubic-bezier(.5,0,.7,.4)}
+  65% {transform:translateY(0);animation-timing-function:cubic-bezier(.3,.6,.5,1)}
+  82% {transform:translateY(-1.5px)}
+  100%{transform:none}}
+.cta:active{transform:scale(.97)}
+/* текст-«барабан» (лишився для кнопки «Скопіювати адресу») */
+.roll{display:inline-block;position:relative;overflow:hidden;height:1.5em;line-height:1.5em;vertical-align:middle}
+.roll>span{display:block;transition:transform .55s cubic-bezier(.7,0,.2,1)}
+.roll>span::after{content:attr(data-t);position:absolute;left:0;top:100%;white-space:nowrap}
+.cta:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 .card-bg{position:absolute;inset:0;border-radius:inherit;overflow:hidden;z-index:0;pointer-events:none}
 .bgslide{position:absolute;top:0;bottom:0;right:0;width:74%;opacity:0;transition:opacity 1.2s ease;
   -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 34%);mask-image:linear-gradient(90deg,transparent 0%,#000 34%)}
@@ -113,10 +139,23 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 @keyframes fill{to{width:100%}}
 
 .hero-bottom{position:relative;z-index:3;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 40px}
-.play{display:inline-flex;align-items:center;gap:14px;font-size:.88rem;font-weight:600}
-.play .ring{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;transition:.3s}
-.play:hover .ring{background:var(--gold);color:var(--bg1)}
-.play svg{width:16px;height:16px}
+/* кнопка «Розклад печі»: вогник у кільці, золота дуга — скільки пройшло до наступної випічки */
+.play{display:inline-flex;align-items:center;gap:14px;font-size:.9rem;font-weight:700;line-height:1.25}
+.play-ring{position:relative;flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:var(--gold);
+  transition:background .35s,color .35s,transform .35s}
+.play-ring::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(var(--gold) calc(var(--p,0) * 1turn),rgba(255,244,232,.2) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));
+          mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));transition:--p .6s}
+.play .flame{width:20px;height:22px;transform-origin:50% 90%;animation:flame 1.4s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 6px rgba(255,150,60,.55))}
+@keyframes flame{0%{transform:scale(.9,.94) rotate(-4deg)}50%{transform:scale(1.05,1.12) rotate(3deg)}100%{transform:scale(.96,1) rotate(-1deg)}}
+.play-txt{display:flex;flex-direction:column;gap:2px}
+.play-txt small{display:inline-flex;align-items:center;gap:7px;font-size:.74rem;font-weight:600;color:var(--soft);letter-spacing:.02em}
+.play-txt small::before{content:"";width:6px;height:6px;border-radius:50%;background:#ff9a3c;box-shadow:0 0 8px #ff9a3c}
+.play-txt small.done::before{background:var(--gold);box-shadow:none}
+.play:hover .play-ring{background:var(--gold);color:var(--bg1);transform:translateY(2px)}
+.play:hover .flame{animation-duration:.45s;filter:none}
 .soc{display:flex;gap:22px;font-size:.78rem;font-weight:600;color:var(--soft)}
 .soc a:hover{color:var(--gold)}
 .mouse{width:20px;height:32px;border:1.5px solid var(--gold);border-radius:12px;position:relative;opacity:.9}
@@ -135,6 +174,10 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .overlay.open{opacity:1;visibility:visible}
 .overlay a{font-size:2rem;font-weight:700;letter-spacing:-.03em}
 .overlay a:hover{color:var(--gold)}
+.overlay a{position:relative}
+.overlay a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--gold);
+  transform:scaleX(0);transform-origin:right;transition:transform .3s ease}
+.overlay a:hover::after,.overlay a:active::after,.overlay a.cur::after{transform:scaleX(1);transform-origin:left}
 .close{position:absolute;top:18px;right:18px;width:46px;height:46px;font-size:1.8rem;line-height:1}
 
 /* ---------- телефони й сенсорні екрани: легші версії ефектів ---------- */
@@ -307,7 +350,11 @@ section{padding-block:clamp(80px,12vw,170px)}
   color:rgba(255,244,232,.3);transition:color .3s;padding:4px 0}
 .cat:hover{color:rgba(255,244,232,.6)}
 .cat[aria-selected="true"]{color:var(--text)}
-.cat[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:3px;background:var(--gold);border-radius:3px}
+/* лінія під категорією росте від центру: при наведенні — тонка й напівпрозора, у вибраної — повна золота */
+.cat::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:3px;background:var(--gold);border-radius:3px;
+  transform:scale(0,.5);opacity:.5;transition:transform .3s ease,opacity .3s ease}
+.cat:hover::after{transform:scale(1,.5)}
+.cat[aria-selected="true"]::after{transform:none;opacity:1}
 .cat:focus{outline:none}
 .cat:focus-visible{outline:1px solid var(--gold);outline-offset:6px;border-radius:4px}
 
@@ -367,23 +414,58 @@ section{padding-block:clamp(80px,12vw,170px)}
   .m-photo img.in,.m-list.enter .m-item{animation:none}
 }
 
-.gallery{background:linear-gradient(180deg,var(--bg2),var(--bg4))}
-.gallery h2{margin-block:16px 52px}
-.g-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:clamp(150px,19vw,290px);gap:16px}
-.g-grid .ph{border-radius:22px}
-.g1{grid-column:span 7;grid-row:span 2}
-.g2{grid-column:span 5}
-.g3{grid-column:span 5}
-.g4{grid-column:span 12;grid-row:span 2}
-.g-grid .gc{position:absolute;left:18px;bottom:16px;z-index:2;font-weight:600;font-size:.9rem;text-shadow:0 1px 14px rgba(0,0,0,.6)}
-.ph.shade::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,9,5,.6),transparent 48%)}
 
-.contacts{background:var(--bg0);padding-bottom:0}
+.contacts{background:var(--bg0);padding-bottom:0;overflow:hidden;isolation:isolate}
+.contacts>.wrap{position:relative;z-index:1}
+/* кільця від кошика для розстойки (банетона) — як слід борошна на тісті */
+.contacts::before{content:"";position:absolute;z-index:0;pointer-events:none;width:min(1100px,120vw);aspect-ratio:1;right:-20%;top:-14%;
+  background:repeating-radial-gradient(circle,rgba(233,181,103,.1) 0 2px,transparent 2px 26px);
+  -webkit-mask:radial-gradient(circle,#000 0 30%,transparent 68%);mask:radial-gradient(circle,#000 0 30%,transparent 68%);
+  transform:rotate(-8deg) scaleY(.82)}
+/* тепле світло знизу, наче відчинили піч, — розгоряється разом із тим, як піднімається слово */
+.contacts::after{content:"";position:absolute;z-index:0;pointer-events:none;left:-10%;right:-10%;bottom:-12%;height:85%;
+  background:radial-gradient(55% 60% at 50% 100%,rgba(233,140,60,.55),rgba(190,100,40,.24) 42%,transparent 74%),
+             radial-gradient(30% 34% at 50% 100%,rgba(255,190,110,.32),transparent 72%);
+  opacity:calc(.25 + .75 * var(--glow,1));transform:scaleY(calc(.8 + .2 * var(--glow,1)));transform-origin:50% 100%}
+.crumbs{position:absolute;inset:0;z-index:0;pointer-events:none}
+.crumbs i{position:absolute;bottom:-12px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;
+  background:radial-gradient(circle,rgba(255,236,205,.9),rgba(255,236,205,0) 70%);opacity:0;
+  animation:crumb var(--t) linear var(--d) infinite;animation-play-state:paused}
+.contacts.live .crumbs i{animation-play-state:running}
+@keyframes crumb{0%{opacity:0;transform:translate3d(0,0,0)}12%{opacity:var(--o)}70%{opacity:calc(var(--o) * .6)}
+  100%{opacity:0;transform:translate3d(var(--dx),calc(-1 * var(--rise,900px)),0)}}
+@media(max-width:760px){ .contacts::before{width:150vw;right:-75vw;top:-6%} .contacts::after{height:60%;bottom:-8%} }
+@media(prefers-reduced-motion:reduce){ .crumbs{display:none} .contacts::after{opacity:1;transform:none} }
 .c-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(36px,7vw,110px);align-items:end}
 .contacts h2{margin-block:16px 36px}
 .addr{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:22px}
-.copy{border:1px solid rgba(255,244,232,.35);border-radius:99px;padding:10px 20px;font-size:.88rem;font-weight:600;transition:.2s}
-.copy:hover{background:rgba(255,244,232,.1)}
+.copy{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(255,244,232,.35);border-radius:99px;padding:9px 20px 9px 14px;font-size:.88rem;font-weight:600;
+  position:relative;overflow:hidden;isolation:isolate;transition:border-color .4s ease,color .4s ease,transform .2s ease}
+.copy::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--gold);transform:translateX(-101%);transition:transform .6s cubic-bezier(.7,0,.2,1)}
+.copy-ic{position:relative;width:18px;height:18px;flex:none}
+.copy-ic svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:opacity .3s ease,transform .45s cubic-bezier(.3,1.4,.5,1)}
+.copy .pg-b,.copy .pg-f{transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.copy .i-ok{opacity:0;transform:scale(.5)}
+.copy .i-ok path{stroke-dasharray:16;stroke-dashoffset:16;transition:stroke-dashoffset .45s ease .15s}
+/* наведення: аркуші «розходяться», ніби адресу вже знімають копію */
+.copy:hover{border-color:rgba(233,181,103,.8)}
+.copy:hover .pg-b{transform:translate(-1.5px,-1.5px)}
+.copy:hover .pg-f{transform:translate(1.5px,1.5px)}
+.copy:active{transform:scale(.96)}
+/* скопійовано: золото заливає кнопку, галочка домальовується, напис прокручується */
+.copy.done{color:var(--bg1);border-color:var(--gold)}
+.copy.done::before{transform:none}
+.copy.done .i-copy{opacity:0;transform:scale(.5) rotate(-20deg)}
+.copy.done .i-ok{opacity:1;transform:none}
+.copy.done .i-ok path{stroke-dashoffset:0}
+.copy.done .roll>span{transform:translateY(-100%)}
+.copy:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+/* адреса на мить підсвічується золотою лінією — видно, що саме скопіювали */
+.addr{position:relative;width:fit-content}
+.addr::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:3px;border-radius:3px;background:var(--gold);transform:scaleX(0);transform-origin:left;opacity:0}
+.addr.flash::after{animation:addrFlash 1.6s cubic-bezier(.7,0,.2,1)}
+@keyframes addrFlash{0%{transform:scaleX(0);opacity:1}35%{transform:scaleX(1);opacity:1;transform-origin:left}36%{transform-origin:right}100%{transform:scaleX(0);opacity:1;transform-origin:right}}
+@media(prefers-reduced-motion:reduce){ .cta:hover{animation:none} .cta-ic svg,.roll>span,.copy::before,.copy-ic svg{transition:none} .addr.flash::after{animation:none} }
 .hours{border-top:1px solid var(--line)}
 .hours div{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
 .hours span{color:var(--soft)}
@@ -391,11 +473,66 @@ section{padding-block:clamp(80px,12vw,170px)}
 .clinks{display:flex;gap:26px;flex-wrap:wrap;margin-top:28px;font-weight:600}
 .clinks a{border-bottom:1px solid rgba(255,244,232,.35);padding-bottom:2px;transition:.2s}
 .clinks a:hover{color:var(--gold);border-color:var(--gold)}
-.mega{font-size:clamp(6rem,30vw,30rem);font-weight:800;letter-spacing:-.07em;line-height:.74;margin-top:clamp(50px,8vw,110px);color:var(--bg3);text-align:center;user-select:none;white-space:nowrap}
+/* футер: велике Proof «підходить», як тісто; крапка в кінці — булочка «нагору» */
+.mega{display:flex;justify-content:center;align-items:flex-end;font-size:clamp(5.4rem,26vw,27rem);font-weight:800;letter-spacing:-.04em;
+  line-height:.8;margin-top:clamp(56px,8vw,120px);padding-bottom:.05em;user-select:none;white-space:nowrap}
+.mega .ch{display:inline-block;transform-origin:50% 100%;will-change:transform;
+  background:linear-gradient(180deg,#e3a85e 0%,#b97536 34%,#7a4520 70%,#4a2814 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  transform:translateY(calc((1 - var(--k,1)) * 26%)) scaleY(calc(.32 + .68 * var(--k,1))) scaleX(calc(1.14 - .14 * var(--k,1)))}
+.mega.risen .ch{animation:proofing 4.2s ease-in-out infinite alternate;animation-delay:calc(var(--i) * -.6s)}
+@keyframes proofing{from{transform:none}to{transform:scaleY(1.025) scaleX(.995)}}
+.bun{position:relative;align-self:flex-end;flex:none;width:.2em;height:.18em;margin:0 0 .037em .035em;padding:0;border-radius:50% 50% 44% 44%/62% 62% 38% 38%;
+  background:radial-gradient(70% 60% at 40% 28%,#f2c77e,#c98a3b 52%,#7d4620 100%);
+  box-shadow:inset 0 -.012em .02em rgba(60,25,5,.55),inset 0 .01em .015em rgba(255,235,200,.45),0 .02em .04em rgba(0,0,0,.45);
+  transform-origin:50% 100%;will-change:transform;
+  transform:translateY(calc((1 - var(--k,1)) * 60%)) scale(calc(.7 + .3 * var(--k,1)));opacity:calc(var(--k,1) * 1.6);
+  transition:transform .9s cubic-bezier(.22,.8,.3,1),opacity .6s ease,filter .4s ease}
+.bun::before{content:"";position:absolute;left:22%;right:22%;top:30%;height:22%;border-top:.006em solid rgba(90,40,10,.55);border-radius:50%}
+.bun svg{position:absolute;left:50%;top:56%;width:.07em;height:.07em;translate:-50% -50%;color:#fff4e8;opacity:.85;transition:transform .7s cubic-bezier(.22,.8,.3,1)}
+.bun:hover{filter:brightness(1.08)}
+.bun:hover svg{transform:translateY(-.012em)}
+/* коли слово піднялось — булочка ледь дихає, а від наведення плавно підіймається */
+.mega.risen .bun{animation:bunBreath 5s ease-in-out infinite}
+@keyframes bunBreath{0%,100%{transform:none}50%{transform:translateY(-.008em) scale(1.015)}}
+/* наведення — булочка м'яко підстрибує: присідає, злітає, приземляється з легким «пружинням» */
+@keyframes bunBounce{
+  0%  {transform:none;animation-timing-function:cubic-bezier(.4,0,.6,1)}
+  12% {transform:translateY(0) scale(1.08,.9);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  42% {transform:translateY(-.075em) scale(.96,1.05);animation-timing-function:cubic-bezier(.55,0,.8,.4)}
+  64% {transform:translateY(0) scale(1.06,.93);animation-timing-function:cubic-bezier(.3,.6,.5,1)}
+  78% {transform:translateY(-.016em) scale(.99,1.01);animation-timing-function:cubic-bezier(.5,0,.6,1)}
+  90%,100%{transform:none}}
+.mega.risen .bun:hover{animation:bunBounce 1.15s 1}
+/* на телефоні наведення немає — тож булочка сама інколи підстрибує, ніби кличе нагору */
+@media(hover:none){
+  .mega.risen .bun{animation:bunHop 4.5s infinite 1s}
+  @keyframes bunHop{
+    0%,70%{transform:none;animation-timing-function:cubic-bezier(.4,0,.6,1)}
+    73% {transform:scale(1.08,.9);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+    81% {transform:translateY(-.07em) scale(.96,1.05);animation-timing-function:cubic-bezier(.55,0,.8,.4)}
+    88% {transform:scale(1.06,.93);animation-timing-function:cubic-bezier(.3,.6,.5,1)}
+    93% {transform:translateY(-.014em)}
+    97%,100%{transform:none}}
+}
+.bun:focus{outline:none}
+.bun:focus-visible{outline:3px solid var(--gold);outline-offset:.02em}
+.f-status{margin-top:22px}
+.bun::after{content:"";position:absolute;inset:-14px;border-radius:50%}      /* більша зона натискання для пальця */
+@media(max-width:760px){ .mega{font-size:31vw} }
+.mega{justify-content:space-between}
+.mega.measure .ch,.mega.measure .bun{transform:none!important;animation:none!important}
+/* градієнт фарбує лише рамку літери, а через щільний інтервал рамка вужча за саму літеру —
+   розширюємо зону фарбування полями й повертаємо відстань від'ємним відступом */
+.mega .ch{padding:.12em .09em 0;margin:-.12em -.09em 0}
+@media(prefers-reduced-motion:reduce){ .mega .ch,.bun{transform:none} }
 .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:26px;color:var(--faint);font-size:.82rem;border-top:1px solid rgba(255,244,232,.1)}
 
 .js .rv{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
 .js .rv.in{opacity:1;transform:none}
+/* заголовки: з'являються знизу вгору з затуханням, коли доходять до екрана */
+.js .hd{opacity:0}
+.js .hd.in{animation:fadeUp .7s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 
 @media(max-width:900px){
   body{font-size:16px}
@@ -409,8 +546,6 @@ section{padding-block:clamp(80px,12vw,170px)}
   .about-photo{position:relative;top:0;aspect-ratio:4/3}
   .braid{padding-left:68px}
   .braid-svg{width:44px}
-  .g1,.g2,.g3,.g4{grid-column:span 12;grid-row:span 1}
-  .g1,.g4{grid-row:span 2}
   .hero-bottom .mouse{display:none}
   .topbar .status{display:none}
 }
@@ -418,7 +553,146 @@ section{padding-block:clamp(80px,12vw,170px)}
   html{scroll-behavior:auto}
   *{animation:none!important}
   .js .rv{opacity:1;transform:none;transition:none}
+  .js .hd{opacity:1} .js .hd.in{animation:none}
 }
+
+/* ================= ЄДИНИЙ СТИЛЬ СЕКЦІЙ =================
+   Усі секції говорять однією мовою: «аркуші», що наїжджають один на одного з заокругленим верхом
+   (як «Про нас» на hero), одна шкала заголовків, однаковий ритм відступів і золотий вузлик-мітка. */
+:root{--sheet-r:48px;--sheet-gap:48px}
+.about-copy h2,.oven-copy h2,.menu-top h2,.gallery h2,.contacts h2{
+  font-size:clamp(2.6rem,5.4vw,5.6rem);line-height:.94;letter-spacing:-.045em;margin-block:18px 28px;text-wrap:balance}
+.menu-top h2{margin-bottom:0}
+.oven,.menu,.gallery{padding-block:clamp(104px,10vw,156px)}
+.about{padding-block:clamp(84px,9vw,132px)}
+.contacts{padding-top:clamp(104px,10vw,156px)}
+.sheet{position:relative;margin-top:calc(-1 * var(--sheet-gap));border-radius:var(--sheet-r) var(--sheet-r) 0 0;
+  box-shadow:0 -26px 60px rgba(0,0,0,.42)}
+.oven.sheet{z-index:3}.menu.sheet{z-index:4}.gallery.sheet{z-index:5}.contacts.sheet{z-index:6}
+/* «пристиковка»: коли аркуш доїжджає до шапки, заокруглення й тінь зникають — блоки сходяться без щілини
+   (--k рахує JS: 1 — аркуш ще далеко, 0 — впритул під шапкою) */
+.sheet,.stack.on > .about{border-top-left-radius:calc(var(--sheet-r) * var(--k,1));border-top-right-radius:calc(var(--sheet-r) * var(--k,1));
+  box-shadow:0 -26px 60px rgba(0,0,0,calc(.42 * var(--k,1)))}
+
+.eyebrow{display:inline-flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(233,181,103,.16)}
+/* тепла фактура «зерна» по всій сторінці (лише на комп'ютері) */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;opacity:.07;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .9  0 0 0 0 .8  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+@media (pointer:coarse),(max-width:760px){ body::after{display:none} :root{--sheet-r:32px;--sheet-gap:32px} }
+
+/* ===================== АТМОСФЕРА: фото на столі ===================== */
+.gallery{overflow:hidden;background:
+  radial-gradient(120% 85% at 50% 45%,rgba(0,0,0,0) 35%,rgba(0,0,0,.5) 100%),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.34) 0 2px,transparent 2px 240px),
+  repeating-linear-gradient(90deg,rgba(255,220,180,.03) 0 1px,transparent 1px 7px),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.07) 0 3px,transparent 3px 29px),
+  linear-gradient(180deg,#432717,#2e190e)}
+.table{position:relative;aspect-ratio:16/10;margin-top:clamp(36px,4vw,60px)}
+/* знімок: кремовий папір, фото 4:3, підпис нашим шрифтом */
+.snap{position:absolute;left:var(--x);top:var(--y);width:var(--w);z-index:var(--z,1);padding:12px 12px 0;border-radius:6px;text-align:left;
+  background:linear-gradient(180deg,#f7eee2,#efe3d2);color:#3a2216;
+  transform:rotate(var(--r));translate:var(--px,0px) var(--py,0px);
+  box-shadow:0 12px 24px rgba(0,0,0,.45),0 2px 4px rgba(0,0,0,.35);
+  transition:transform .6s cubic-bezier(.2,1.35,.4,1),box-shadow .45s ease,translate .5s ease-out,opacity .4s ease}
+.snap .pic{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:3px;background:#2a170e}
+.snap .pic img{transition:transform .8s ease}
+.snap .cap{display:block;padding:12px 4px 15px;font-weight:700;font-size:clamp(.95rem,1.25vw,1.2rem);letter-spacing:-.025em;line-height:1.2}
+/* наведення: знімок піднімається над столом, вирівнюється, тінь падає далі */
+.snap:hover,.snap:focus-visible,.snap.lift{z-index:20;transform:translateY(-26px) rotate(calc(var(--r) * .25)) scale(1.06);
+  box-shadow:0 46px 70px -12px rgba(0,0,0,.65),0 14px 24px rgba(0,0,0,.32)}
+.snap:hover .pic img{transform:scale(1.06)}
+.snap:focus{outline:none}
+.snap:focus-visible{outline:2px solid var(--gold);outline-offset:6px}
+/* поява: знімки «падають» на стіл по черзі */
+.js .table:not(.landed) .snap{opacity:0;transform:translateY(-90px) rotate(calc(var(--r) * -2.2)) scale(1.14)}
+.table.landed:not(.settled) .snap{transition-delay:var(--d)}
+/* дрібниці на столі */
+.stain{position:absolute;border-radius:50%;pointer-events:none;border:5px solid rgba(110,58,22,.32);
+  box-shadow:inset 0 0 10px rgba(60,25,5,.35),0 0 2px rgba(60,25,5,.4);filter:blur(.6px)}
+.tbean{position:absolute;width:var(--s,22px);color:#4b2713;transform:rotate(var(--r));pointer-events:none;
+  filter:drop-shadow(0 5px 6px rgba(0,0,0,.45))}
+/* перегляд знімка великим */
+.lb{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:4vh 4vw;background:rgba(20,9,5,0);transition:background .45s ease}
+.lb[hidden]{display:none}
+.lb.show{background:rgba(20,9,5,.88)}
+.lb-fig{margin:0;width:min(1040px,92vw);padding:14px 14px 0;border-radius:8px;background:linear-gradient(180deg,#f7eee2,#efe3d2);color:#3a2216;
+  box-shadow:0 60px 120px rgba(0,0,0,.7);transform-origin:0 0}
+.lb-fig img{width:100%;height:auto;max-height:72vh;object-fit:cover;border-radius:4px}
+.lb-fig figcaption{padding:14px 6px 18px;font-size:clamp(1.2rem,2vw,1.8rem);font-weight:800;letter-spacing:-.035em}
+.lb-x{position:absolute;top:18px;right:22px;width:48px;height:48px;border-radius:50%;font-size:1.8rem;line-height:1;color:var(--text);
+  border:1px solid rgba(255,244,232,.3);opacity:0;transition:opacity .3s}
+.lb.show .lb-x{opacity:1}
+@media(max-width:760px){
+  .table{display:grid;grid-template-columns:1fr 1fr;gap:20px 10px;aspect-ratio:auto;padding:12px 0 8px}
+  .snap{position:relative;left:auto;top:auto;width:auto;padding:8px 8px 0;translate:none}
+  .snap .cap{padding:9px 2px 11px;font-size:.88rem}
+  .snap:nth-child(odd of .snap){margin-top:18px}
+  .stain,.tbean{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .js .table:not(.landed) .snap{opacity:1;transform:rotate(var(--r))}
+  .snap,.snap .pic img,.lb{transition:none}
+}
+
+/* ================= ФОНИ СЕКЦІЙ ================= */
+/* «Про нас»: робоча дошка пекаря — хмарки борошна, дрібний пил і тонкий колосок у кутку */
+.about{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 420'%3E%3Cg fill='none' stroke='%23E9B567' stroke-width='2' stroke-linecap='round' opacity='.075'%3E%3Cpath d='M100 418 C97 330 103 220 100 52'/%3E%3Cpath d='M100 52 L100 14'/%3E%3Cellipse cx='89' cy='70' rx='8' ry='19' transform='rotate(-28 89 70)'/%3E%3Cellipse cx='111' cy='83' rx='8' ry='19' transform='rotate(28 111 83)'/%3E%3Cpath d='M86 56 L66 8'/%3E%3Cpath d='M114 69 L134 21'/%3E%3Cellipse cx='89' cy='96' rx='8' ry='19' transform='rotate(-28 89 96)'/%3E%3Cellipse cx='111' cy='109' rx='8' ry='19' transform='rotate(28 111 109)'/%3E%3Cpath d='M86 82 L66 34'/%3E%3Cpath d='M114 95 L134 47'/%3E%3Cellipse cx='89' cy='122' rx='8' ry='19' transform='rotate(-28 89 122)'/%3E%3Cellipse cx='111' cy='135' rx='8' ry='19' transform='rotate(28 111 135)'/%3E%3Cpath d='M86 108 L66 60'/%3E%3Cpath d='M114 121 L134 73'/%3E%3Cellipse cx='89' cy='148' rx='8' ry='19' transform='rotate(-28 89 148)'/%3E%3Cellipse cx='111' cy='161' rx='8' ry='19' transform='rotate(28 111 161)'/%3E%3Cpath d='M86 134 L66 86'/%3E%3Cpath d='M114 147 L134 99'/%3E%3Cellipse cx='89' cy='174' rx='8' ry='19' transform='rotate(-28 89 174)'/%3E%3Cellipse cx='111' cy='187' rx='8' ry='19' transform='rotate(28 111 187)'/%3E%3Cpath d='M86 160 L66 112'/%3E%3Cpath d='M114 173 L134 125'/%3E%3Cellipse cx='89' cy='200' rx='8' ry='19' transform='rotate(-28 89 200)'/%3E%3Cellipse cx='111' cy='213' rx='8' ry='19' transform='rotate(28 111 213)'/%3E%3Cpath d='M86 186 L66 138'/%3E%3Cpath d='M114 199 L134 151'/%3E%3Cellipse cx='89' cy='226' rx='8' ry='19' transform='rotate(-28 89 226)'/%3E%3Cellipse cx='111' cy='239' rx='8' ry='19' transform='rotate(28 111 239)'/%3E%3Cpath d='M86 212 L66 164'/%3E%3Cpath d='M114 225 L134 177'/%3E%3Cellipse cx='89' cy='252' rx='8' ry='19' transform='rotate(-28 89 252)'/%3E%3Cellipse cx='111' cy='265' rx='8' ry='19' transform='rotate(28 111 265)'/%3E%3Cpath d='M86 238 L66 190'/%3E%3Cpath d='M114 251 L134 203'/%3E%3C/g%3E%3C/svg%3E") right 2% bottom -150px / min(360px,30vw) auto no-repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Ccircle cx='71.2' cy='33.2' r='0.99' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='117.9' cy='80.5' r='0.45' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='8.2' cy='95.4' r='0.46' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='93.4' cy='181.9' r='0.51' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='138.0' cy='208.5' r='0.92' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='214.8' cy='10.2' r='1.17' fill='%23FFF4E8' opacity='0.08'/%3E%3Ccircle cx='31.7' cy='25.9' r='0.68' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='39.8' cy='128.0' r='0.98' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='120.5' cy='13.8' r='0.45' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='149.7' cy='94.1' r='0.68' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='99.7' cy='65.9' r='1.11' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='53.7' cy='126.4' r='0.87' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='160.5' cy='63.3' r='1.28' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='92.0' cy='166.6' r='0.54' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='8.6' cy='147.0' r='1.09' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='192.6' cy='69.0' r='1.03' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='127.6' cy='100.4' r='1.16' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='104.3' cy='146.1' r='0.45' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='142.4' cy='218.5' r='1.14' fill='%23FFF4E8' opacity='0.08'/%3E%3Ccircle cx='84.9' cy='147.1' r='0.42' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='37.0' cy='25.8' r='0.45' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='28.5' cy='54.5' r='0.75' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='17.7' cy='98.8' r='0.89' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='180.2' cy='190.1' r='0.65' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='78.9' cy='194.5' r='1.26' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='38.8' cy='51.0' r='0.61' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='129.6' cy='57.8' r='0.40' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='81.2' cy='124.6' r='1.26' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='113.4' cy='135.9' r='1.01' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='197.9' cy='171.6' r='1.19' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='86.3' cy='87.8' r='0.49' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='13.7' cy='14.8' r='0.59' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='74.8' cy='11.6' r='0.40' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='22.3' cy='80.0' r='0.42' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='135.1' cy='32.7' r='0.63' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='80.1' cy='27.0' r='1.16' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='102.5' cy='106.4' r='0.48' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='75.4' cy='58.2' r='1.15' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='5.1' cy='209.2' r='0.88' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='119.5' cy='5.9' r='0.88' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='189.9' cy='153.2' r='0.64' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='36.7' cy='169.8' r='0.88' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='72.5' cy='49.1' r='1.13' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='187.6' cy='177.3' r='1.14' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='49.9' cy='113.9' r='0.72' fill='%23FFF4E8' opacity='0.05'/%3E%3Ccircle cx='6.1' cy='61.5' r='0.63' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='210.4' cy='98.4' r='1.24' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='210.1' cy='80.2' r='0.60' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='43.3' cy='45.0' r='0.96' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='184.9' cy='105.5' r='0.99' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='18.7' cy='145.3' r='1.22' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='165.0' cy='105.2' r='0.56' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='73.2' cy='176.2' r='1.27' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='88.3' cy='208.3' r='1.05' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='27.9' cy='33.3' r='1.21' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='32.2' cy='181.8' r='1.28' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='77.1' cy='120.7' r='0.52' fill='%23FFF4E8' opacity='0.05'/%3E%3Ccircle cx='213.6' cy='142.9' r='0.87' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='95.4' cy='191.8' r='1.14' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='55.4' cy='64.5' r='0.62' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='57.1' cy='92.2' r='0.52' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='77.8' cy='100.8' r='0.93' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='92.5' cy='201.9' r='0.85' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='115.2' cy='4.1' r='0.80' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='0.9' cy='175.8' r='0.56' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='159.5' cy='122.4' r='0.69' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='122.2' cy='172.5' r='0.50' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='54.7' cy='60.9' r='1.10' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='123.6' cy='167.2' r='1.22' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='134.8' cy='111.2' r='0.86' fill='%23FFF4E8' opacity='0.13'/%3E%3C/svg%3E") 0 0 / 220px 220px,
+  radial-gradient(38% 32% at 16% 18%,rgba(255,244,232,.07),transparent 70%),
+  radial-gradient(34% 30% at 86% 64%,rgba(255,244,232,.05),transparent 70%),
+  radial-gradient(28% 24% at 52% 98%,rgba(255,244,232,.045),transparent 70%),
+  linear-gradient(180deg,#2c180e,#26140b)}
+/* «Розклад печі»: цегляна стіна; біля вікна печі вона тепліша, під текстом — темніша */
+.oven{background:
+  radial-gradient(55% 62% at 76% 36%,rgba(255,122,40,.22),rgba(255,122,40,0) 70%),
+  linear-gradient(90deg,rgba(20,9,5,.9) 0%,rgba(20,9,5,.62) 42%,rgba(20,9,5,.28) 100%),
+  linear-gradient(0deg,rgba(20,9,5,.92) 0%,rgba(20,9,5,.45) 38%,rgba(20,9,5,.55) 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='96'%3E%3Crect width='240' height='96' fill='%23170a05'/%3E%3Crect x='2' y='2' width='116' height='44' rx='3' fill='%234a2512'/%3E%3Crect x='4' y='3' width='112' height='3' rx='1.5' fill='%23ffd2a0' opacity='.05'/%3E%3Crect x='122' y='2' width='116' height='44' rx='3' fill='%233f1f11'/%3E%3Crect x='124' y='3' width='112' height='3' rx='1.5' fill='%23ffd2a0' opacity='.05'/%3E%3Crect x='-58' y='50' width='116' height='44' rx='3' fill='%233f1f11'/%3E%3Crect x='-56' y='51' width='112' height='3' rx='1.5' fill='%23ffd2a0' opacity='.05'/%3E%3Crect x='62' y='50' width='116' height='44' rx='3' fill='%2347230f'/%3E%3Crect x='64' y='51' width='112' height='3' rx='1.5' fill='%23ffd2a0' opacity='.05'/%3E%3Crect x='182' y='50' width='116' height='44' rx='3' fill='%234a2512'/%3E%3Crect x='184' y='51' width='112' height='3' rx='1.5' fill='%23ffd2a0' opacity='.05'/%3E%3C/svg%3E") 0 0 / 240px 96px,
+  var(--bg0)}
+/* «Меню»: темна дошка для меню з розводами крейди і малюнком біля заголовка */
+.menu{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'%3E%3Cg fill='none' stroke='%23FFF4E8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' opacity='.13'%3E%3Cpath d='M40 110 h96 v34 a34 34 0 0 1 -34 34 h-28 a34 34 0 0 1 -34 -34 z'/%3E%3Cpath d='M136 120 a18 18 0 0 1 0 36'/%3E%3Cpath d='M28 190 h132'/%3E%3Cpath d='M66 92 c-10 -14 10 -22 0 -38'/%3E%3Cpath d='M90 92 c-10 -14 10 -22 0 -38'/%3E%3Cpath d='M114 92 c-10 -14 10 -22 0 -38'/%3E%3Cellipse cx='252' cy='150' rx='58' ry='30'/%3E%3Cpath d='M206 168 h92'/%3E%3Cpath d='M222 154 l18 -20'/%3E%3Cpath d='M244 160 l20 -24'/%3E%3Cpath d='M268 160 l18 -22'/%3E%3C/g%3E%3C/svg%3E") right 4% top 72px / min(320px,30vw) auto no-repeat,
+  radial-gradient(42% 22% at 22% 12%,rgba(255,244,232,.05),transparent 70%),
+  radial-gradient(30% 18% at 78% 46%,rgba(255,244,232,.035),transparent 70%),
+  radial-gradient(46% 20% at 40% 88%,rgba(255,244,232,.04),transparent 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Ccircle cx='71.2' cy='33.2' r='0.99' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='117.9' cy='80.5' r='0.45' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='8.2' cy='95.4' r='0.46' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='93.4' cy='181.9' r='0.51' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='138.0' cy='208.5' r='0.92' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='214.8' cy='10.2' r='1.17' fill='%23FFF4E8' opacity='0.08'/%3E%3Ccircle cx='31.7' cy='25.9' r='0.68' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='39.8' cy='128.0' r='0.98' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='120.5' cy='13.8' r='0.45' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='149.7' cy='94.1' r='0.68' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='99.7' cy='65.9' r='1.11' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='53.7' cy='126.4' r='0.87' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='160.5' cy='63.3' r='1.28' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='92.0' cy='166.6' r='0.54' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='8.6' cy='147.0' r='1.09' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='192.6' cy='69.0' r='1.03' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='127.6' cy='100.4' r='1.16' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='104.3' cy='146.1' r='0.45' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='142.4' cy='218.5' r='1.14' fill='%23FFF4E8' opacity='0.08'/%3E%3Ccircle cx='84.9' cy='147.1' r='0.42' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='37.0' cy='25.8' r='0.45' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='28.5' cy='54.5' r='0.75' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='17.7' cy='98.8' r='0.89' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='180.2' cy='190.1' r='0.65' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='78.9' cy='194.5' r='1.26' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='38.8' cy='51.0' r='0.61' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='129.6' cy='57.8' r='0.40' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='81.2' cy='124.6' r='1.26' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='113.4' cy='135.9' r='1.01' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='197.9' cy='171.6' r='1.19' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='86.3' cy='87.8' r='0.49' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='13.7' cy='14.8' r='0.59' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='74.8' cy='11.6' r='0.40' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='22.3' cy='80.0' r='0.42' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='135.1' cy='32.7' r='0.63' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='80.1' cy='27.0' r='1.16' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='102.5' cy='106.4' r='0.48' fill='%23FFF4E8' opacity='0.06'/%3E%3Ccircle cx='75.4' cy='58.2' r='1.15' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='5.1' cy='209.2' r='0.88' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='119.5' cy='5.9' r='0.88' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='189.9' cy='153.2' r='0.64' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='36.7' cy='169.8' r='0.88' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='72.5' cy='49.1' r='1.13' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='187.6' cy='177.3' r='1.14' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='49.9' cy='113.9' r='0.72' fill='%23FFF4E8' opacity='0.05'/%3E%3Ccircle cx='6.1' cy='61.5' r='0.63' fill='%23FFF4E8' opacity='0.13'/%3E%3Ccircle cx='210.4' cy='98.4' r='1.24' fill='%23FFF4E8' opacity='0.16'/%3E%3Ccircle cx='210.1' cy='80.2' r='0.60' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='43.3' cy='45.0' r='0.96' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='184.9' cy='105.5' r='0.99' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='18.7' cy='145.3' r='1.22' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='165.0' cy='105.2' r='0.56' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='73.2' cy='176.2' r='1.27' fill='%23FFF4E8' opacity='0.09'/%3E%3Ccircle cx='88.3' cy='208.3' r='1.05' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='27.9' cy='33.3' r='1.21' fill='%23FFF4E8' opacity='0.14'/%3E%3Ccircle cx='32.2' cy='181.8' r='1.28' fill='%23FFF4E8' opacity='0.12'/%3E%3Ccircle cx='77.1' cy='120.7' r='0.52' fill='%23FFF4E8' opacity='0.05'/%3E%3Ccircle cx='213.6' cy='142.9' r='0.87' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='95.4' cy='191.8' r='1.14' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='55.4' cy='64.5' r='0.62' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='57.1' cy='92.2' r='0.52' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='77.8' cy='100.8' r='0.93' fill='%23FFF4E8' opacity='0.15'/%3E%3Ccircle cx='92.5' cy='201.9' r='0.85' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='115.2' cy='4.1' r='0.80' fill='%23FFF4E8' opacity='0.07'/%3E%3Ccircle cx='0.9' cy='175.8' r='0.56' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='159.5' cy='122.4' r='0.69' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='122.2' cy='172.5' r='0.50' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='54.7' cy='60.9' r='1.10' fill='%23FFF4E8' opacity='0.11'/%3E%3Ccircle cx='123.6' cy='167.2' r='1.22' fill='%23FFF4E8' opacity='0.10'/%3E%3Ccircle cx='134.8' cy='111.2' r='0.86' fill='%23FFF4E8' opacity='0.13'/%3E%3C/svg%3E") 40px 60px / 260px 260px,
+  linear-gradient(180deg,#33201a,#281812)}
+@media(max-width:760px){
+  .about{background:
+    radial-gradient(60% 30% at 20% 12%,rgba(255,244,232,.07),transparent 70%),
+    radial-gradient(55% 26% at 85% 62%,rgba(255,244,232,.05),transparent 70%),
+    linear-gradient(180deg,#2c180e,#26140b)}
+  .menu{background-image:none;background:
+    radial-gradient(60% 18% at 25% 10%,rgba(255,244,232,.05),transparent 70%),
+    radial-gradient(60% 18% at 60% 85%,rgba(255,244,232,.04),transparent 70%),
+    linear-gradient(180deg,#33201a,#281812)}
+}
+
+/* ================= КУРСОР «БУЛОЧКА» (лише миша) =================
+   курсор — маленька булочка з надрізом: на ходу тягнеться, як тісто, у бік руху й сиплє борошно;
+   на кнопках «підходить» і стає напівпрозорою, на фото — велика булочка «Відкрити», клік — пухкий хмарка борошна */
+.cur{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s ease}
+html.cc .cur{opacity:1}
+html.cc.cur-out .cur{opacity:0}
+html.cc,html.cc *{cursor:none!important}
+.cur-s{position:absolute;left:-11px;top:-11px;width:22px;height:22px;will-change:transform}
+.cur-b{position:absolute;inset:0;border-radius:50% 50% 46% 46%/56% 56% 44% 44%;
+  background:radial-gradient(70% 60% at 38% 30%,#fbe3b8,#e0a45c 55%,#a5622d 100%);
+  box-shadow:0 3px 9px rgba(0,0,0,.45),inset 0 -2px 3px rgba(80,35,10,.35);
+  transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .3s ease}
+.cur-b::before{content:"";position:absolute;left:26%;right:26%;top:24%;height:34%;border-top:1.5px solid rgba(110,50,15,.6);border-radius:50%}
+.cur-b::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;margin:-1.5px 0 0 -1.5px;border-radius:50%;background:rgba(60,25,8,.85)}
+.cur>b{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.6);font-size:.66rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--bg1);white-space:nowrap;opacity:0;transition:opacity .25s ease,transform .4s cubic-bezier(.3,1.5,.5,1)}
+.cur.hov .cur-b{transform:scale(1.9);opacity:.5}
+.cur.lbl .cur-b{transform:scale(4.6)}
+.cur.lbl .cur-b::before,.cur.lbl .cur-b::after{opacity:0}
+.cur.lbl>b{opacity:1;transform:translate(-50%,-50%)}
+.cur.down .cur-b{transform:scale(1.15,.7)}
+.cur.hov.down .cur-b{transform:scale(1.7,1.3)}
+.cur.lbl.down .cur-b{transform:scale(4.3,3.8)}
+.cur-flour{position:fixed;inset:0;width:100%;height:100%;z-index:9998;pointer-events:none}
 </style>
 </head>
 <body>
@@ -490,9 +764,9 @@ section{padding-block:clamp(80px,12vw,170px)}
 
     <div class="hero-main">
       <div>
-        <h1>Дай тісту<br><span class="gold">час.</span></h1>
+        <h1 class="hd">Дай тісту<br><span class="gold">час.</span></h1>
         <p>Пекарня і кав'ярня в центрі Києва. Випікаємо щоранку з 5:00, щоб до відкриття все було ще тепле.</p>
-        <a class="cta" href="#menu">Дивитися меню</a>
+        <a class="cta" href="#menu"><span>Дивитися меню</span><span class="cta-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 2.5v11M3.5 9 8 13.5 12.5 9"/></svg><svg viewBox="0 0 16 16"><path d="M8 2.5v11M3.5 9 8 13.5 12.5 9"/></svg></span></a>
       </div>
 
       <div class="pts" id="pts">
@@ -503,9 +777,11 @@ section{padding-block:clamp(80px,12vw,170px)}
     </div>
 
     <div class="hero-bottom">
-      <a class="play" href="#oven">
-        <span class="ring"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v11M3 8.5 8 13.5l5-5"/></svg></span>
-        Розклад печі
+      <a class="play" href="#oven" id="playOven">
+        <span class="play-ring" aria-hidden="true">
+          <svg class="flame" viewBox="0 0 24 26"><path fill="currentColor" d="M12 1.5c1.3 3.9 6.5 6.4 6.5 12.6a6.5 6.5 0 0 1-13 0c0-3.2 1.6-5.2 3.2-6.7.1 2.3 1 3.7 2.4 4.4-.6-3.6-.3-6.9.9-10.3z"/><path fill="#fff1d9" opacity=".75" d="M12 13.2c.8 1.6 2.6 2.6 2.6 4.8a2.6 2.6 0 0 1-5.2 0c0-1.3.6-2.2 1.3-2.8.2.9.6 1.4 1.1 1.6-.2-1.2-.1-2.4.2-3.6z"/></svg>
+        </span>
+        <span class="play-txt"><span>Розклад печі</span><small id="playNext">Далі</small></span>
       </a>
       <div class="soc"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Facebook</a></div>
       <div class="mouse" aria-hidden="true"></div>
@@ -522,7 +798,7 @@ section{padding-block:clamp(80px,12vw,170px)}
     </figure>
     <div class="about-copy">
       <div class="eyebrow">Про нас</div>
-      <h2>Хліб не любить <span class="gold">поспіху.</span></h2>
+      <h2 class="hd">Хліб не любить <span class="gold">поспіху.</span></h2>
       <p class="lead">Proof почався з кухонної печі і закваски від бабусі. Спершу пекли для друзів, потім для сусідів, а одного ранку відкрили двері. Відтоді нічого не змінилося: тісто, час і добрі інгредієнти.</p>
       <div class="braid" id="braid">
         <svg class="braid-svg" id="braidSvg" aria-hidden="true"></svg>
@@ -536,12 +812,12 @@ section{padding-block:clamp(80px,12vw,170px)}
 </div>
 
 <!-- OVEN -->
-<section class="oven" id="oven">
+<section class="oven sheet" id="oven">
   <div class="wrap">
     <div class="oven-top">
       <div class="oven-copy">
         <div class="eyebrow">Розклад печі</div>
-        <h2>Сьогодні<br>з печі</h2>
+        <h2 class="hd">Сьогодні<br>з печі</h2>
         <p class="sub">Кожен день свій розклад. Що вже готове, підсвічено.</p>
         <p class="note">Закінчується, то закінчується. Завтра випечемо знову.</p>
       </div>
@@ -574,12 +850,12 @@ section{padding-block:clamp(80px,12vw,170px)}
 </section>
 
 <!-- MENU -->
-<section class="menu" id="menu">
+<section class="menu sheet" id="menu">
   <div class="wrap">
     <div class="menu-top">
       <div>
         <div class="eyebrow">Меню</div>
-        <h2>Що візьмеш<br><span class="gold">до кави?</span></h2>
+        <h2 class="hd">Що візьмеш<br><span class="gold">до кави?</span></h2>
       </div>
     </div>
     <div class="cats" role="tablist" id="cats" aria-label="Категорії меню"></div>
@@ -598,45 +874,85 @@ section{padding-block:clamp(80px,12vw,170px)}
 </section>
 
 <!-- GALLERY -->
-<section class="gallery" id="gallery">
+<section class="gallery sheet" id="gallery">
   <div class="wrap">
-    <div class="eyebrow rv">Атмосфера</div>
-    <h2 class="rv">Місце, де не хочеться <span class="gold">поспішати</span></h2>
-    <div class="g-grid">
-      <div class="ph shade g1 rv"><img loading="lazy" src="media/gallery-1.jpg" alt="Вітрина з випічкою" onerror="this.style.display='none'"><span class="gc">Вітрина до обіду</span></div>
-      <div class="ph shade g2 rv"><img loading="lazy" src="media/gallery-2.jpg" alt="Спільний стіл з ноутбуком і кавою" onerror="this.style.display='none'"><span class="gc">Спільний стіл</span></div>
-      <div class="ph shade g3 rv"><img loading="lazy" src="media/gallery-3.jpg" alt="Совок з кавовими зернами" style="object-position:center 60%" onerror="this.style.display='none'"><span class="gc">Зерно від обсмажки</span></div>
-      <div class="ph shade g4 rv"><img loading="lazy" src="media/gallery-4.jpg" alt="Столик біля вікна ввечері" style="object-position:center 65%" onerror="this.style.display='none'"><span class="gc">Місце біля вікна</span></div>
+    <div class="eyebrow">Атмосфера</div>
+    <h2 class="hd">Місце, де не хочеться <span class="gold">поспішати</span></h2>
+    <div class="table" id="table">
+      <span class="stain" style="left:29.5%;top:40%;width:8%;aspect-ratio:1" aria-hidden="true"></span>
+      <span class="stain" style="left:31%;top:42.5%;width:6.5%;aspect-ratio:1;opacity:.55" aria-hidden="true"></span>
+      <svg class="tbean" style="left:63%;top:40%;--r:24deg" viewBox="0 0 100 140" aria-hidden="true"><use href="#bean"/></svg>
+      <svg class="tbean" style="left:65.5%;top:45%;--r:-38deg;--s:19px" viewBox="0 0 100 140" aria-hidden="true"><use href="#bean"/></svg>
+      <svg class="tbean" style="left:33%;top:94%;--r:72deg;--s:22px" viewBox="0 0 100 140" aria-hidden="true"><use href="#bean"/></svg>
+      <svg class="tbean" style="left:66%;top:95%;--r:-8deg;--s:18px" viewBox="0 0 100 140" aria-hidden="true"><use href="#bean"/></svg>
+      <svg class="tbean" style="left:31%;top:7%;--r:110deg;--s:20px" viewBox="0 0 100 140" aria-hidden="true"><use href="#bean"/></svg>
+      <button class="snap" type="button" style="--x:0.5%;--y:1.5%;--w:31%;--r:-5deg;--d:0s;--z:2" data-depth="14">
+        <span class="pic"><img loading="lazy" src="media/gallery-1.jpg" alt="Вітрина з випічкою" onerror="this.style.display='none'"></span>
+        <span class="cap">Вітрина до обіду</span>
+      </button>
+      <button class="snap" type="button" style="--x:34.5%;--y:0%;--w:30%;--r:2.5deg;--d:.1s;--z:3" data-depth="20">
+        <span class="pic"><img loading="lazy" src="media/gallery-5.jpg" alt="Бариста наливає молоко в капучино" style="object-position:45% center" onerror="this.style.display='none'"></span>
+        <span class="cap">Ранкова кава</span>
+      </button>
+      <button class="snap" type="button" style="--x:68%;--y:3%;--w:31%;--r:-3deg;--d:.2s;--z:5" data-depth="10">
+        <span class="pic"><img loading="lazy" src="media/gallery-3.jpg" alt="Совок з кавовими зернами" style="object-position:60% 60%" onerror="this.style.display='none'"></span>
+        <span class="cap">Зерно від обсмажки</span>
+      </button>
+      <button class="snap" type="button" style="--x:1.5%;--y:54.5%;--w:31%;--r:4deg;--d:.3s;--z:4" data-depth="22">
+        <span class="pic"><img loading="lazy" src="media/gallery-2.jpg" alt="Спільний стіл з ноутбуком і кавою" style="object-position:55% center" onerror="this.style.display='none'"></span>
+        <span class="cap">Спільний стіл</span>
+      </button>
+      <button class="snap" type="button" style="--x:34.5%;--y:49%;--w:31%;--r:-3.5deg;--d:.4s;--z:6" data-depth="16">
+        <span class="pic"><img loading="lazy" src="media/gallery-6.jpg" alt="Пекар дістає з печі хліб і круасани" style="object-position:55% center" onerror="this.style.display='none'"></span>
+        <span class="cap">Щойно з печі</span>
+      </button>
+      <button class="snap" type="button" style="--x:68.5%;--y:53%;--w:31%;--r:5deg;--d:.5s;--z:4" data-depth="18">
+        <span class="pic"><img loading="lazy" src="media/gallery-4.jpg" alt="Столик біля вікна ввечері" style="object-position:62% 65%" onerror="this.style.display='none'"></span>
+        <span class="cap">Місце біля вікна</span>
+      </button>
     </div>
   </div>
 </section>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbCap">
+  <button class="lb-x" id="lbX" type="button" aria-label="Закрити">×</button>
+  <figure class="lb-fig" id="lbFig"><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+</div>
 </main>
 
 <!-- CONTACTS -->
-<footer class="contacts" id="contacts">
+<footer class="contacts sheet" id="contacts">
+  <div class="crumbs" id="crumbs" aria-hidden="true"></div>
   <div class="wrap">
     <div class="c-grid">
-      <div class="rv">
+      <div>
         <div class="eyebrow">Контакти</div>
-        <h2>Заходьте,<br>поки <span class="gold">тепле</span></h2>
+        <h2 class="hd">Заходьте,<br>поки <span class="gold">тепле</span></h2>
+        <div class="rv">
         <div class="addr" id="addr">Київ, вул. Хлібна, 7</div>
-        <button class="copy" id="copyBtn">Скопіювати адресу</button>
+        <button class="copy" id="copyBtn" type="button"><span class="copy-ic" aria-hidden="true"><svg class="i-copy" viewBox="0 0 16 16"><path class="pg-b" d="M3 11V4.2C3 3.5 3.5 3 4.2 3H11"/><rect class="pg-f" x="5.5" y="5.5" width="8" height="8" rx="1.8"/></svg><svg class="i-ok" viewBox="0 0 16 16"><path d="M3 8.6l3.2 3.1L13 4.6"/></svg></span><span class="roll"><span data-t="Скопійовано">Скопіювати адресу</span></span></button>
         <div class="clinks">
           <a href="tel:+380000000000">+380 00 000 00 00</a>
           <a href="mailto:hello@proof.example">hello@proof.example</a>
           <a href="#" aria-label="Instagram">Instagram</a>
         </div>
+        </div>
       </div>
-      <div class="hours rv">
-        <div><span>Пн–Пт</span><b>7:30 – 20:00</b></div>
-        <div><span>Сб–Нд</span><b>8:30 – 21:00</b></div>
-        <div><span>Піч розігріта</span><b>з 5:00</b></div>
+      <div class="rv">
+        <div class="hours">
+          <div><span>Пн–Пт</span><b>7:30 – 20:00</b></div>
+          <div><span>Сб–Нд</span><b>8:30 – 21:00</b></div>
+          <div><span>Піч розігріта</span><b>з 5:00</b></div>
+        </div>
+        <div class="status f-status"><span class="dot"></span><span class="st-text">Перевіряємо години…</span></div>
       </div>
     </div>
-    <div class="mega" aria-hidden="true">Proof</div>
+    <div class="mega" id="mega">
+      <span class="ch" style="--i:0" aria-hidden="true">P</span><span class="ch" style="--i:1" aria-hidden="true">r</span><span class="ch" style="--i:2" aria-hidden="true">o</span><span class="ch" style="--i:3" aria-hidden="true">o</span><span class="ch" style="--i:4" aria-hidden="true">f</span>
+      <button class="bun" id="toTop" type="button" aria-label="Нагору"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button>
+    </div>
     <div class="foot">
       <span>© <span id="year">2026</span> Proof. Концептуальний проєкт, усі дані вигадані.</span>
-      <span>Фото: Unsplash (тимчасові)</span>
+      <span>Фото й відео згенеровані для кейсу</span>
     </div>
   </div>
 </footer>
@@ -1006,6 +1322,7 @@ const ovenFx=(()=>{
   new ResizeObserver(size).observe(fire); size();
   new IntersectionObserver(([e])=>{ e.isIntersecting&&!document.hidden?start():stop(); }).observe(mouth);
   document.addEventListener('visibilitychange',()=>{ document.hidden?stop():start(); });
+  window.ovenFlare=flare;           // кнопка «Розклад печі» в hero запалює піч, коли до неї доїхали
   return {flare};
 })();
 
@@ -1066,7 +1383,8 @@ return render;
     else{
       const img=new Image(); img.alt=name; img.src=cat.img; img.onerror=()=>img.remove();
       img.className=calm?'':'in'; photo.insertBefore(img,catLabel);
-      const done=()=>{ photo.querySelectorAll('img').forEach(x=>{ if(x!==img) x.remove(); }); };
+      // прибираємо лише старіші фото під цим; новіше (якщо швидко клацнули далі) лишається поверх
+      const done=()=>{ for(const x of [...photo.querySelectorAll('img')]){ if(x===img) break; x.remove(); } };
       calm?done():img.addEventListener('animationend',done,{once:true});
     }
     // список
@@ -1085,14 +1403,154 @@ return render;
   show(names[0]);
 })();
 
+/* ---------- атмосфера: фото на столі ---------- */
+(()=>{
+  const table=document.getElementById('table'), snaps=[...table.querySelectorAll('.snap')];
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // знімки «падають» на стіл, коли стіл з'являється на екрані
+  new IntersectionObserver((es,io)=>es.forEach(e=>{ if(!e.isIntersecting) return;
+    table.classList.add('landed'); io.disconnect();
+    setTimeout(()=>table.classList.add('settled'),1600);          // далі — без затримок, щоб наведення було миттєвим
+  }),{threshold:.25}).observe(table);
+  // легкий паралакс: знімки трохи «пливуть» за курсором, кожен на своїй глибині
+  if(!LOW_POWER&&!calm){
+    table.addEventListener('pointermove',e=>{ const r=table.getBoundingClientRect();
+      const mx=(e.clientX-r.left)/r.width-.5, my=(e.clientY-r.top)/r.height-.5;
+      snaps.forEach(sn=>{ const d=+sn.dataset.depth||12; sn.style.setProperty('--px',(-mx*d).toFixed(1)+'px'); sn.style.setProperty('--py',(-my*d).toFixed(1)+'px'); });
+    });
+    table.addEventListener('pointerleave',()=>snaps.forEach(sn=>{ sn.style.setProperty('--px','0px'); sn.style.setProperty('--py','0px'); }));
+  }
+  // на телефоні: торкання — знімок піднімається
+  snaps.forEach(sn=>sn.addEventListener('pointerdown',e=>{ if(e.pointerType!=='mouse'){ snaps.forEach(x=>x.classList.toggle('lift',x===sn)); } }));
+
+  // клік — знімок «вилітає» зі столу й відкривається великим
+  const lb=document.getElementById('lb'), fig=document.getElementById('lbFig'), img=document.getElementById('lbImg'), cap=document.getElementById('lbCap'), x=document.getElementById('lbX');
+  let from=null;
+  function open(sn){
+    from=sn; const src=sn.querySelector('img');
+    img.src=src.currentSrc||src.src; img.alt=src.alt; img.style.objectPosition=src.style.objectPosition||'';
+    cap.textContent=sn.querySelector('.cap').textContent;
+    lb.hidden=false; document.body.style.overflow='hidden';
+    const end=fig.getBoundingClientRect(), st=sn.getBoundingClientRect();
+    if(!calm){
+      const rot=parseFloat(getComputedStyle(sn).getPropertyValue('--r'))||0;
+      fig.style.transition='none';
+      fig.style.transform=`translate(${st.left-end.left}px,${st.top-end.top}px) scale(${st.width/end.width}) rotate(${rot}deg)`;
+      void fig.offsetWidth;
+      fig.style.transition='transform .6s cubic-bezier(.2,.9,.2,1)'; fig.style.transform='none';
+    }
+    requestAnimationFrame(()=>lb.classList.add('show')); x.focus({preventScroll:true});
+  }
+  function close(){
+    lb.classList.remove('show'); document.body.style.overflow='';
+    const done=()=>{ lb.hidden=true; fig.style.transform=''; if(from) from.focus({preventScroll:true}); };
+    if(calm||!from){ done(); return; }
+    const end=fig.getBoundingClientRect(), st=from.getBoundingClientRect();
+    fig.style.transition='transform .45s cubic-bezier(.6,0,.4,1)';
+    fig.style.transform=`translate(${st.left-end.left}px,${st.top-end.top}px) scale(${st.width/end.width})`;
+    setTimeout(done,440);
+  }
+  snaps.forEach(sn=>sn.addEventListener('click',()=>open(sn)));
+  x.addEventListener('click',close);
+  lb.addEventListener('click',e=>{ if(e.target===lb) close(); });
+  addEventListener('keydown',e=>{ if(e.key==='Escape'&&!lb.hidden) close(); });
+})();
+
+/* ---------- кнопка «Розклад печі» в hero ---------- */
+(()=>{
+  const btn=document.getElementById('playOven'), ring=btn.querySelector('.play-ring'), lbl=document.getElementById('playNext');
+  const toMin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+  const times=OVEN.map(o=>toMin(o.t)), OPEN=5*60;                     // піч вмикаємо о 5:00
+  function update(){
+    const d=new Date(), now=d.getHours()*60+d.getMinutes();
+    const i=times.findIndex(t=>t>now);
+    if(i===-1){ lbl.textContent='Вже готове'; lbl.classList.add('done'); ring.style.setProperty('--p',1); return; }
+    const prev=i?times[i-1]:OPEN, p=Math.max(0,Math.min(1,(now-prev)/(times[i]-prev)));
+    lbl.textContent='Далі · '+OVEN[i].t; lbl.classList.remove('done'); ring.style.setProperty('--p',p.toFixed(3));
+  }
+  update(); setInterval(update,60000);
+  btn.addEventListener('click',()=>{ setTimeout(()=>window.ovenFlare&&window.ovenFlare(),950); });
+})();
+
+/* ---------- футер: Proof «підходить», як тісто ---------- */
+(()=>{
+  const mega=document.getElementById('mega'), parts=[...mega.querySelectorAll('.ch, .bun')];
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp=v=>Math.max(0,Math.min(1,v)), N=parts.length, STEP=.06;
+  const foot=document.getElementById('contacts'), crumbs=document.getElementById('crumbs');
+  // борошняний пил, що повільно здіймається в теплому світлі (на телефоні — менше)
+  if(!calm){
+    const n=LOW_POWER?7:16, rnd=(a,b)=>a+Math.random()*(b-a);
+    for(let i=0;i<n;i++){
+      const c=document.createElement('i'), t=rnd(14,26);
+      c.style.cssText=`--x:${rnd(2,98).toFixed(1)}%;--s:${rnd(4,11).toFixed(1)}px;--t:${t.toFixed(1)}s;--d:${(-rnd(0,t)).toFixed(1)}s;--o:${rnd(.35,.8).toFixed(2)};--dx:${rnd(-60,60).toFixed(0)}px`;
+      crumbs.appendChild(c);
+    }
+    const setRise=()=>foot.style.setProperty('--rise',foot.offsetHeight+'px');
+    setRise(); addEventListener('resize',setRise);
+    new IntersectionObserver(([e])=>foot.classList.toggle('live',e.isIntersecting)).observe(foot);
+  }
+  let tick=false;
+  function rise(){
+    tick=false;
+    const r=mega.getBoundingClientRect();
+    if(r.top>innerHeight+50){ parts.forEach(c=>c.style.setProperty('--k',0)); mega.classList.remove('risen'); return; }
+    const p=calm?1:clamp((innerHeight-r.top)/(r.height*.95));
+    parts.forEach((c,i)=>c.style.setProperty('--k',clamp((p-i*STEP)/(1-(N-1)*STEP)).toFixed(3)));   // літери піднімаються по черзі, крапка — остання
+    mega.classList.toggle('risen',!calm&&p>=1);
+    foot.style.setProperty('--glow',p.toFixed(3));
+  }
+  addEventListener('scroll',()=>{ if(!tick){ tick=true; requestAnimationFrame(rise); } },{passive:true});
+  // розмір шрифту підбираємо так, щоб «Proof.» займало всю ширину контенту — від краю до краю
+  function fit(){
+    const box=mega.parentElement, cs=getComputedStyle(box);
+    const target=box.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    mega.classList.add('measure'); mega.style.fontSize='100px'; mega.style.justifyContent='flex-start';
+    const first=parts[0].getBoundingClientRect(), last=parts.at(-1).getBoundingClientRect();
+    const padL=parseFloat(getComputedStyle(parts[0]).paddingLeft)||0;     // поле першої літери не рахуємо
+    const w=last.right-(first.left+padL);
+    mega.style.fontSize=(100*target/w).toFixed(2)+'px'; mega.style.justifyContent='';
+    mega.classList.remove('measure');
+  }
+  fit(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ fit(); rise(); });
+  addEventListener('resize',()=>{ fit(); rise(); }); rise();
+  document.getElementById('toTop').addEventListener('click',()=>scrollTo({top:0,behavior:calm?'auto':'smooth'}));
+})();
+
 /* ---------- sticky-бар і мобільне меню ---------- */
 const sticky=document.getElementById('sticky'), overlay=document.getElementById('overlay');
 function onScroll(){
   // поки hero «прилип» і «Про нас» ще не доїхало догори, у hero вже є своє меню
   const st=document.getElementById('stack');
-  const limit=(st&&st.classList.contains('on')) ? st.getBoundingClientRect().top+scrollY+SLIDE_SCREENS*innerHeight-90 : innerHeight*.7;
+  // шапка виїжджає лише тоді, коли «Про нас» дійшло до неї впритул — без смужки hero з його власним меню між ними
+  const limit=(st&&st.classList.contains('on')) ? st.getBoundingClientRect().top+scrollY+SLIDE_SCREENS*innerHeight-barH-1 : innerHeight*.7;
   sticky.classList.toggle('show', scrollY>limit);
+  if(!dockTick){ dockTick=true; requestAnimationFrame(dock); }
 }
+let dockTick=false;
+/* аркуші «пристиковуються» до шапки: заокруглення зникає за останні ~140px руху.
+   Позиції міряємо лише при зміні розмітки, а на прокрутці рахуємо з scrollY — без примусового перерахунку layout на кожному кадрі */
+const sheets=[...document.querySelectorAll('.sheet')];
+const DOCK=140; const lastK=new Map(); let sheetY=[], barH=62;
+function measureSheets(){
+  barH=sticky.offsetHeight||62;
+  sheetY=sheets.map(el=>el.getBoundingClientRect().top+scrollY);
+  lastK.clear(); dock();
+}
+function setK(el,top){
+  const r=Math.max(0,Math.min(1,(top-barH)/DOCK));
+  // на телефоні — лише два стани з короткою CSS-анімацією, щоб не перемальовувати аркуш на кожному кадрі
+  const k=LOW_POWER ? (r<.15?0:1) : Math.round(r*25)/25;
+  if(lastK.get(el)!==k){ lastK.set(el,k); el.style.setProperty('--k',k); }
+}
+function dock(){
+  dockTick=false;
+  const y=scrollY;
+  sheets.forEach((el,i)=>setK(el,sheetY[i]-y));
+  if(stackEl.classList.contains('on')) setK(aboutEl,parseFloat(aboutEl.style.getPropertyValue('--slide'))||0);
+}
+new ResizeObserver(measureSheets).observe(document.body);
+addEventListener('load',measureSheets);
 addEventListener('scroll',onScroll,{passive:true}); onScroll();
 function setMenu(on){ overlay.classList.toggle('open',on); document.body.style.overflow=on?'hidden':''; }
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>setMenu(true)));
@@ -1100,20 +1558,119 @@ document.getElementById('closeBtn').addEventListener('click',()=>setMenu(false))
 overlay.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
 addEventListener('keydown',e=>{ if(e.key==='Escape') setMenu(false); });
 
+/* ---------- у хедері підкреслено розділ, який зараз на екрані ---------- */
+(()=>{
+  const ids=['about','oven','menu','gallery','contacts'];
+  const links=[...document.querySelectorAll('.links a, .overlay a')];
+  const set=id=>links.forEach(a=>a.classList.toggle('cur',a.getAttribute('href')==='#'+id));
+  const spy=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) set(e.target.id); }),{rootMargin:'-45% 0px -54% 0px'});
+  ids.forEach(id=>{ const el=document.getElementById(id); if(el) spy.observe(el); });
+  // на початку сторінки (hero) нічого не підкреслюємо
+  addEventListener('scroll',()=>{ if(scrollY<innerHeight*.5) set(''); },{passive:true});
+})();
+
 /* ---------- копіювання адреси ---------- */
-document.getElementById('copyBtn').addEventListener('click',function(){
-  const t=document.getElementById('addr').textContent, btn=this;
-  const done=()=>{btn.textContent='Скопійовано ✓'; setTimeout(()=>btn.textContent='Скопіювати адресу',1800);};
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,done); } else done();
-});
+(()=>{
+  const btn=document.getElementById('copyBtn'), addr=document.getElementById('addr'); let t=0;
+  const done=()=>{
+    clearTimeout(t); btn.classList.add('done'); btn.setAttribute('aria-label','Адресу скопійовано');
+    addr.classList.remove('flash'); void addr.offsetWidth; addr.classList.add('flash');
+    t=setTimeout(()=>{ btn.classList.remove('done'); btn.removeAttribute('aria-label'); },2200);
+  };
+  btn.addEventListener('click',()=>{
+    const text=addr.textContent;
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,done); } else done();
+  });
+})();
+
+/* ---------- лого в хедері → на головний блок ----------
+   hero «прилипає» (sticky), тож звичайне посилання #top зупинялось на місці, де його накрив блок «Про нас» */
+document.querySelectorAll('a.logo, a[href="#top"]').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault(); setMenu(false);
+  scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  history.replaceState(null,'',location.pathname+location.search);
+}));
 
 /* ---------- поява блоків ---------- */
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+/* заголовки анімуються щоразу, коли заходять на екран: повністю пішли з екрана — «скидаємо», повернулись — знову з'являються */
+const hdIO=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting&&e.intersectionRatio>=.12) e.target.classList.add('in');
+  else if(!e.isIntersecting) e.target.classList.remove('in');
+}),{threshold:[0,.12]});
+document.querySelectorAll('.hd').forEach(el=>hdIO.observe(el));
 
 document.getElementById('year').textContent=new Date().getFullYear();
 updateStatus(); renderOven();
 setInterval(()=>{updateStatus();renderOven();},60000);
+</script>
+
+<div class="cur" id="cur" aria-hidden="true"><div class="cur-s" id="curS"><div class="cur-b"></div></div><b></b></div>
+<canvas class="cur-flour" id="curFlour" aria-hidden="true"></canvas>
+<script>
+/* ---------- курсор «булочка»: тягнеться, як тісто, і сиплє борошно ---------- */
+(()=>{
+  const cv=document.getElementById('curFlour');
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches){ cv.remove(); return; }    // телефони й планшети — звичайний дотик
+  const root=document.documentElement, cur=document.getElementById('cur'), sq=document.getElementById('curS'), label=cur.querySelector('b');
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ctx=cv.getContext('2d'), HOV='a,button,[role="tab"],label,summary';
+  document.querySelectorAll('.snap').forEach(el=>el.dataset.cursor='Відкрити');
+  let mx=-100,my=-100,x=-100,y=-100,sp=0,ang=0,raf=0,shown=false,dpr=1;
+  const P=[];                                                    // крупинки борошна
+  function size(){ dpr=Math.min(2,devicePixelRatio||1); cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  size(); addEventListener('resize',size);
+  function puff(px,py,n,force){
+    for(let i=0;i<n&&P.length<160;i++){
+      const a=Math.random()*Math.PI*2, v=force*(.3+Math.random());
+      P.push({x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.2,r:.6+Math.random()*1.8,life:1,decay:.012+Math.random()*.02});
+    }
+  }
+  function loop(){
+    raf=0;
+    const k=calm?1:.35, dx=(mx-x)*k, dy=(my-y)*k;
+    x+=dx; y+=dy;
+    const v=Math.hypot(dx,dy);
+    sp=sp*.75+v*.25;
+    if(v>.6) ang=Math.atan2(dy,dx)*180/Math.PI;
+    const st=calm?0:Math.min(sp/38,.55);                         // чим швидше — тим довше тягнеться тісто
+    cur.style.transform=`translate3d(${x}px,${y}px,0)`;
+    sq.style.transform=`rotate(${ang}deg) scale(${1+st},${1-st*.55})`;
+    // борошно сиплеться з булочки на ходу
+    if(!calm&&v>2&&!cur.classList.contains('lbl')){
+      const n=Math.min(3,Math.floor(v/9)+1);
+      for(let i=0;i<n&&P.length<160;i++) P.push({x:x-dx*.4+(Math.random()-.5)*8,y:y-dy*.4+(Math.random()-.5)*8,
+        vx:-dx*.04+(Math.random()-.5)*.5,vy:(Math.random()-.5)*.4,r:.5+Math.random()*1.5,life:1,decay:.018+Math.random()*.02});
+    }
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(let i=P.length-1;i>=0;i--){
+      const p=P[i]; p.vy+=.035; p.vx*=.97; p.x+=p.vx; p.y+=p.vy; p.life-=p.decay;
+      if(p.life<=0){ P.splice(i,1); continue; }
+      ctx.globalAlpha=p.life*.8; ctx.fillStyle='#ffeed6';
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    if(Math.abs(mx-x)>.1||Math.abs(my-y)>.1||sp>.05||P.length) raf=requestAnimationFrame(loop);   // у спокої — нічого не крутиться
+  }
+  const go=()=>{ if(!raf) raf=requestAnimationFrame(loop); };
+  addEventListener('pointermove',e=>{
+    if(e.pointerType!=='mouse') return;
+    mx=e.clientX; my=e.clientY;
+    if(!shown){ shown=true; x=mx; y=my; root.classList.add('cc'); }
+    root.classList.remove('cur-out'); go();
+  },{passive:true});
+  addEventListener('pointerover',e=>{
+    const t=e.target; if(!t.closest) return;
+    const lbl=t.closest('[data-cursor]'), hov=!lbl&&t.closest(HOV);
+    cur.classList.toggle('lbl',!!lbl); cur.classList.toggle('hov',!!hov);
+    if(lbl) label.textContent=lbl.dataset.cursor;
+  });
+  document.addEventListener('pointerleave',()=>root.classList.add('cur-out'));
+  addEventListener('blur',()=>root.classList.add('cur-out'));
+  addEventListener('pointerdown',e=>{ if(e.pointerType!=='mouse') return; cur.classList.add('down'); if(!calm){ puff(x,y,cur.classList.contains('lbl')?34:20,2.4); go(); } });
+  addEventListener('pointerup',()=>cur.classList.remove('down'));
+})();
 </script>
 </body>
 </html>
