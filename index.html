@@ -95,7 +95,7 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .status{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600;border:1px solid rgba(255,244,232,.26);border-radius:99px;padding:7px 14px;white-space:nowrap;background:rgba(20,9,5,.18)}
 .dot{width:8px;height:8px;border-radius:50%;background:#9a8070}
 .status.open .dot{background:#8fd18f;box-shadow:0 0 0 4px rgba(143,209,143,.2)}
-.burger{display:none;width:46px;height:46px;position:relative;border-radius:50%;border:1px solid rgba(255,244,232,.22);
+.burger{display:none;flex:none;width:46px;height:46px;position:relative;border-radius:50%;border:1px solid rgba(255,244,232,.22);
   background:rgba(20,9,5,.25);transition:border-color .3s ease,background .3s ease}
 .burger span{position:absolute;right:12px;height:2px;border-radius:2px;background:var(--text);transition:width .35s cubic-bezier(.3,1.4,.5,1),transform .35s ease}
 .burger span:nth-child(1){top:18px;width:20px}
@@ -386,20 +386,26 @@ section{padding-block:clamp(80px,12vw,170px)}
 .slot:focus{outline:none}
 .slot:focus-visible{outline:1px solid var(--gold);outline-offset:6px;border-radius:6px}
 
-/* --- телефон: вертикальна шкала --- */
+/* --- телефон: піч одразу під заголовком, а розклад — горизонтальна стрічка, яку гортаєш пальцем --- */
 @media(max-width:760px){
-  .oven-top{grid-template-columns:1fr}
-  .mouth{justify-self:stretch;max-width:none}
-  .day{--rail-x:9px}
-  .day-list{grid-template-columns:1fr;gap:26px;padding-left:44px}
-  .rail,.rail-fill{left:var(--rail-x);top:0;width:2px;height:auto}
-  .rail{bottom:0;right:auto}
-  .rail-fill{height:0;background:linear-gradient(180deg,var(--amber),var(--gold));transition:height .6s ease}
-  .slot{position:relative;padding-right:0}
-  .slot .dot{position:absolute;left:-44px;top:6px;margin:0}
-  .now{left:calc(var(--rail-x) + 1px);top:0;transform:translateY(-50%);flex-direction:row-reverse;transition:top .6s ease}
-  .now i{width:22px;height:3px;border-radius:2px;box-shadow:0 0 10px rgba(233,181,103,.8)}
-  .now b{display:none}                    /* на вузькому екрані цифри часу налазили б на текст */
+  .oven .wrap{display:flex;flex-direction:column}
+  .oven-top,.oven-copy{display:contents}
+  .oven-copy .eyebrow{order:1}
+  .oven-copy h2{order:2;margin-block:14px 10px}
+  .oven-copy .sub{order:3;font-size:.98rem;max-width:none}
+  .mouth{order:4;justify-self:stretch;max-width:none;aspect-ratio:1.42;margin-top:22px}
+  .fire .t{font-size:clamp(3.4rem,17vw,4.6rem);margin-top:10px}
+  .fire .n{font-size:1rem;margin-top:8px}
+  .day-scroll{order:5;margin:6px calc(-1 * var(--pad)) 0;padding:40px var(--pad) 6px;overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;scroll-padding-inline:var(--pad);scrollbar-width:none;
+    -webkit-mask:linear-gradient(90deg,transparent,#000 var(--pad),#000 calc(100% - 44px),transparent);mask:linear-gradient(90deg,transparent,#000 var(--pad),#000 calc(100% - 44px),transparent)}
+  .day-scroll::-webkit-scrollbar{display:none}
+  .day{margin-top:0;width:max-content;padding-right:40px}
+  .day-list{grid-template-columns:repeat(5,148px)}
+  .slot{padding-right:14px;scroll-snap-align:start}
+  .slot .st{font-size:1.7rem}
+  .slot .sn{font-size:.9rem;line-height:1.35}
+  .oven-copy .note{order:6;margin-top:22px;font-size:.88rem}
 }
 @media(prefers-reduced-motion:reduce){
   .fire::before,.fire::after,.slot.next .dot::after,.fire-inner.swap,.flames span,.fire.flare{animation:none}
@@ -621,6 +627,9 @@ section{padding-block:clamp(80px,12vw,170px)}
   .braid-svg{width:44px}
   .hero-bottom .mouse{display:none}
   .topbar .status{display:none}
+  .sticky .status{min-width:0}
+  .sticky .st-text{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .sticky .right-tools{min-width:0}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -677,8 +686,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;op
 .snap:focus{outline:none}
 .snap:focus-visible{outline:2px solid var(--gold);outline-offset:6px}
 /* поява: знімки «падають» на стіл по черзі */
-.js .table:not(.landed) .snap{opacity:0;transform:translateY(-90px) rotate(calc(var(--r) * -2.2)) scale(1.14)}
-.table.landed:not(.settled) .snap{transition-delay:var(--d)}
+.js .snap:not(.landed){opacity:0;transform:translateY(-90px) rotate(calc(var(--r) * -2.2)) scale(1.14)}
+.snap.landed:not(.settled){transition-delay:var(--d)}
+/* фото «проявляється», як полароїд: спершу бліде й без кольору, потім наливається барвами;
+   а сам знімок ледь «струшують», як роблять із полароїдом */
+.js .snap .pic img{filter:brightness(1.75) saturate(.1) contrast(.6) sepia(.25)}
+.snap.landed .pic img{filter:none;transition:filter 2.4s ease calc(var(--d,0s) + .45s),transform .8s ease}
+.snap.landed .pic{animation:shake .7s ease-in-out calc(var(--d,0s) + .55s) 1}
+@keyframes shake{0%,100%{transform:none}25%{transform:rotate(-1.6deg)}55%{transform:rotate(1.2deg)}80%{transform:rotate(-.5deg)}}
 /* дрібниці на столі */
 .stain{position:absolute;border-radius:50%;pointer-events:none;border:5px solid rgba(110,58,22,.32);
   box-shadow:inset 0 0 10px rgba(60,25,5,.35),0 0 2px rgba(60,25,5,.4);filter:blur(.6px)}
@@ -701,9 +716,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;op
   .snap .cap{padding:9px 2px 11px;font-size:.88rem}
   .snap:nth-child(odd of .snap){margin-top:18px}
   .stain,.tbean{display:none}
+  .snap{--d:0s}.snap:nth-child(even of .snap){--d:.14s}        /* на телефоні знімки падають парами, коли доходять до екрана */
 }
 @media(prefers-reduced-motion:reduce){
-  .js .table:not(.landed) .snap{opacity:1;transform:rotate(var(--r))}
+  .js .snap:not(.landed){opacity:1;transform:rotate(var(--r))}
+  .js .snap .pic img{filter:none} .snap.landed .pic{animation:none}
   .snap,.snap .pic img,.lb{transition:none}
 }
 
@@ -924,10 +941,12 @@ html.cc,html.cc *{cursor:none!important}
       </div>
     </div>
 
+    <div class="day-scroll" id="dayScroll">
     <div class="day" id="day">
       <div class="rail"></div><div class="rail-fill" id="railFill"></div>
       <div class="now" id="nowMark"><b id="nowText">--:--</b><i></i></div>
       <ol class="day-list" id="dayList"></ol>
+    </div>
     </div>
   </div>
 </section>
@@ -1354,7 +1373,7 @@ function status(i,now){
 
 // де стоїть «зараз» між центрами позначок
 function placeNow(now){
-  const vertical=matchMedia('(max-width:760px)').matches;
+  const vertical=false;   // на всіх екранах шкала горизонтальна (на телефоні — гортається)
   const box=day.getBoundingClientRect();
   const c=slots.map(s=>{const r=s.querySelector('.dot').getBoundingClientRect();return vertical? r.top+r.height/2-box.top : r.left+r.width/2-box.left;});
   let pos;
@@ -1380,7 +1399,14 @@ function render(){
   fireTime.textContent=OVEN[i].t; fireName.textContent=OVEN[i].n;
   nowText.textContent=fmt(now);
   placeNow(now);
+  // телефон: стрічку розкладу підкручуємо так, щоб було видно найближчу випічку (поки людина сама її не гортала)
+  const sc=document.getElementById('dayScroll');
+  if(sc&&!sc.dataset.touched&&sc.scrollWidth>sc.clientWidth+4){
+    const r=slots[i].getBoundingClientRect(), b=sc.getBoundingClientRect();
+    sc.scrollLeft=Math.max(0,sc.scrollLeft+r.left-b.left-parseFloat(getComputedStyle(sc).paddingLeft)-24);
+  }
 }
+{ const sc=document.getElementById('dayScroll'); ['pointerdown','wheel','touchstart'].forEach(ev=>sc.addEventListener(ev,()=>{ sc.dataset.touched='1'; },{passive:true})); }
 /* ---------- анімації печі: іскри, тріск, спалах ---------- */
 const ovenFx=(()=>{
   const mouth=document.getElementById('mouth'), fire=document.getElementById('fire'), cv=document.getElementById('sparks'), ctx=cv.getContext('2d');
@@ -1509,10 +1535,14 @@ await __y();
   const table=document.getElementById('table'), snaps=[...table.querySelectorAll('.snap')];
   const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // знімки «падають» на стіл, коли стіл з'являється на екрані
-  new IntersectionObserver((es,io)=>es.forEach(e=>{ if(!e.isIntersecting) return;
-    table.classList.add('landed'); io.disconnect();
-    setTimeout(()=>table.classList.add('settled'),1600);          // далі — без затримок, щоб наведення було миттєвим
-  }),{threshold:.25}).observe(table);
+  const land=sn=>{ sn.classList.add('landed'); setTimeout(()=>sn.classList.add('settled'),1600); };   // далі — без затримок, щоб наведення було миттєвим
+  if(matchMedia('(max-width:760px)').matches){
+    // телефон: знімки стоять стовпчиком — кожен падає тоді, коли сам доходить до екрана
+    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ land(e.target); io.unobserve(e.target); } }),{threshold:.3});
+    snaps.forEach(sn=>io.observe(sn));
+  } else {
+    new IntersectionObserver((es,io)=>es.forEach(e=>{ if(!e.isIntersecting) return; snaps.forEach(land); io.disconnect(); }),{threshold:.25}).observe(table);
+  }
   // легкий паралакс: знімки трохи «пливуть» за курсором, кожен на своїй глибині
   if(!LOW_POWER&&!calm){
     table.addEventListener('pointermove',e=>{ const r=table.getBoundingClientRect();
@@ -1529,7 +1559,8 @@ await __y();
   let from=null;
   function open(sn){
     from=sn; const src=sn.querySelector('img');
-    img.src=src.currentSrc||src.src; if(src.currentSrc&&src.currentSrc!==src.src){ const full=new Image(); full.onload=()=>{ if(img.alt===src.alt) img.src=full.src; }; full.src=src.src; }   // у збільшеному перегляді — повна якість img.alt=src.alt; img.style.objectPosition=src.style.objectPosition||'';
+    img.alt=src.alt; img.src=src.currentSrc||src.src; if(src.currentSrc&&src.currentSrc!==src.src){ const full=new Image(); full.onload=()=>{ if(img.alt===src.alt) img.src=full.src; }; full.src=src.src; }   // у збільшеному перегляді — повна якість
+    img.alt=src.alt; img.style.objectPosition=src.style.objectPosition||'';
     cap.textContent=sn.querySelector('.cap').textContent;
     lb.hidden=false; document.body.style.overflow='hidden';
     const end=fig.getBoundingClientRect(), st=sn.getBoundingClientRect();
