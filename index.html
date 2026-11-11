@@ -95,9 +95,14 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .status{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600;border:1px solid rgba(255,244,232,.26);border-radius:99px;padding:7px 14px;white-space:nowrap;background:rgba(20,9,5,.18)}
 .dot{width:8px;height:8px;border-radius:50%;background:#9a8070}
 .status.open .dot{background:#8fd18f;box-shadow:0 0 0 4px rgba(143,209,143,.2)}
-.burger{display:none;width:42px;height:42px;position:relative}
-.burger span{position:absolute;left:9px;right:9px;height:2px;background:var(--text)}
-.burger span:nth-child(1){top:16px}.burger span:nth-child(2){top:25px}
+.burger{display:none;width:46px;height:46px;position:relative;border-radius:50%;border:1px solid rgba(255,244,232,.22);
+  background:rgba(20,9,5,.25);transition:border-color .3s ease,background .3s ease}
+.burger span{position:absolute;right:12px;height:2px;border-radius:2px;background:var(--text);transition:width .35s cubic-bezier(.3,1.4,.5,1),transform .35s ease}
+.burger span:nth-child(1){top:18px;width:20px}
+.burger span:nth-child(2){top:25px;width:13px;background:var(--gold)}
+.burger:hover,.burger:active{border-color:rgba(233,181,103,.7)}
+.burger:hover span:nth-child(1),.burger:active span:nth-child(1){width:13px}
+.burger:hover span:nth-child(2),.burger:active span:nth-child(2){width:20px}
 .right-tools{display:flex;align-items:center;gap:12px}
 
 /* ---------- HERO ---------- */
@@ -206,17 +211,46 @@ h2{font-size:clamp(2.4rem,6vw,5.2rem)}
 .sticky.show{transform:none}
 .sticky .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
 
-/* ---------- overlay nav (mobile) ---------- */
-.overlay{position:fixed;inset:0;z-index:90;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
-  opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
-.overlay.open{opacity:1;visibility:visible}
-.overlay a{font-size:2rem;font-weight:700;letter-spacing:-.03em}
-.overlay a:hover{color:var(--gold)}
-.overlay a{position:relative}
-.overlay a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--gold);
-  transform:scaleX(0);transform-origin:right;transition:transform .3s ease}
-.overlay a:hover::after,.overlay a:active::after,.overlay a.cur::after{transform:scaleX(1);transform-origin:left}
-.close{position:absolute;top:18px;right:18px;width:46px;height:46px;font-size:1.8rem;line-height:1}
+/* ---------- мобільне меню: «дверцята печі» ----------
+   відкривається колом із кнопки, як світло з печі; пункти виїжджають знизу по черзі */
+.overlay{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;background:var(--bg0);overflow:hidden auto;
+  visibility:hidden;clip-path:circle(0 at var(--ox,calc(100% - 44px)) var(--oy,40px));
+  transition:clip-path .75s cubic-bezier(.7,0,.2,1),visibility 0s linear .75s}
+.overlay.open{visibility:visible;clip-path:circle(150% at var(--ox,calc(100% - 44px)) var(--oy,40px));transition:clip-path .75s cubic-bezier(.7,0,.2,1),visibility 0s}
+/* тепле світло знизу й кільця кошика для розстойки — як у футері */
+.overlay::before{content:"";position:absolute;inset:auto -20% -25% -20%;height:70%;pointer-events:none;
+  background:radial-gradient(50% 55% at 50% 100%,rgba(233,140,60,.42),rgba(190,100,40,.16) 45%,transparent 75%)}
+.overlay::after{content:"";position:absolute;width:150vw;aspect-ratio:1;right:-75vw;top:-40vw;pointer-events:none;
+  background:repeating-radial-gradient(circle,rgba(233,181,103,.09) 0 2px,transparent 2px 26px);
+  -webkit-mask:radial-gradient(circle,#000 0 30%,transparent 68%);mask:radial-gradient(circle,#000 0 30%,transparent 68%)}
+.ov-top,.ov-nav,.ov-foot{position:relative;z-index:1;padding-inline:var(--pad)}
+.ov-top{display:flex;align-items:center;justify-content:space-between;padding-block:14px}
+.close{position:relative;width:46px;height:46px;border-radius:50%;border:1px solid rgba(233,181,103,.6);flex:none}
+.close span{position:absolute;left:12px;right:12px;top:22px;height:2px;border-radius:2px;background:var(--text);transition:transform .5s cubic-bezier(.3,1.4,.5,1) .25s}
+.close span:nth-child(1){transform:rotate(0)}.close span:nth-child(2){transform:rotate(0);background:var(--gold)}
+.overlay.open .close span:nth-child(1){transform:rotate(45deg)}
+.overlay.open .close span:nth-child(2){transform:rotate(-45deg)}
+.ov-nav{flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px;padding-block:20px}
+.ov-nav a{display:grid;grid-template-columns:2.4em 1fr;align-items:baseline;column-gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ov-nav a:last-child{border-bottom:0}
+.ov-nav b{font-size:.8rem;font-weight:700;color:var(--faint);letter-spacing:.06em;transition:color .3s}
+.ov-mask{display:block;overflow:hidden;padding-bottom:.06em}
+.ov-t{display:block;font-size:clamp(2.3rem,11vw,3.4rem);font-weight:800;letter-spacing:-.045em;line-height:1.02;
+  transform:translateY(110%);transition:transform .7s cubic-bezier(.2,.8,.2,1),color .3s ease}
+.ov-nav small{grid-column:2;display:block;font-size:.85rem;color:var(--soft);opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+.overlay.open .ov-t{transform:none;transition-delay:calc(.28s + var(--i) * .06s),0s}
+.overlay.open .ov-nav small,.overlay.open .ov-nav b{opacity:1;transform:none;transition-delay:calc(.45s + var(--i) * .06s)}
+.ov-nav a:hover .ov-t,.ov-nav a:active .ov-t{color:var(--gold)}
+.ov-nav a.cur b{color:var(--gold)}
+.ov-nav a.cur .ov-t::after{content:"";display:inline-block;width:.16em;height:.16em;margin-left:.12em;border-radius:50%;background:var(--gold);vertical-align:.12em}
+.ov-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding-block:18px 26px;border-top:1px solid var(--line);
+  font-size:.88rem;color:var(--soft);opacity:0;transition:opacity .5s ease}
+.overlay.open .ov-foot{opacity:1;transition-delay:.6s}
+.ov-foot a{color:var(--text);font-weight:600}
+@media(prefers-reduced-motion:reduce){
+  .overlay,.overlay.open{clip-path:none;transition:none}
+  .ov-t,.ov-nav small,.ov-foot,.close span{transition:none!important}
+}
 
 /* ---------- телефони й сенсорні екрани: легші версії ефектів ---------- */
 @media (max-width:760px),(pointer:coarse){
@@ -711,9 +745,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;op
 /* ================= КУРСОР «БУЛОЧКА» (лише миша) =================
    курсор — маленька булочка з надрізом: на ходу тягнеться, як тісто, у бік руху й сиплє борошно;
    на кнопках «підходить» і стає напівпрозорою, на фото — велика булочка «Відкрити», клік — пухкий хмарка борошна */
-.cur{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s ease}
-html.cc .cur{opacity:1}
-html.cc.cur-out .cur{opacity:0}
+.bcur{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s ease}
+html.cc .bcur{opacity:1}
+html.cc.cur-out .bcur{opacity:0}
 html.cc,html.cc *{cursor:none!important}
 .cur-s{position:absolute;left:-11px;top:-11px;width:22px;height:22px;will-change:transform}
 .cur-b{position:absolute;inset:0;border-radius:50% 50% 46% 46%/56% 56% 44% 44%;
@@ -722,15 +756,15 @@ html.cc,html.cc *{cursor:none!important}
   transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .3s ease}
 .cur-b::before{content:"";position:absolute;left:26%;right:26%;top:24%;height:34%;border-top:1.5px solid rgba(110,50,15,.6);border-radius:50%}
 .cur-b::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;margin:-1.5px 0 0 -1.5px;border-radius:50%;background:rgba(60,25,8,.85)}
-.cur>b{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.6);font-size:.66rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+.bcur>b{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.6);font-size:.66rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
   color:var(--bg1);white-space:nowrap;opacity:0;transition:opacity .25s ease,transform .4s cubic-bezier(.3,1.5,.5,1)}
-.cur.hov .cur-b{transform:scale(1.9);opacity:.5}
-.cur.lbl .cur-b{transform:scale(4.6)}
-.cur.lbl .cur-b::before,.cur.lbl .cur-b::after{opacity:0}
-.cur.lbl>b{opacity:1;transform:translate(-50%,-50%)}
-.cur.down .cur-b{transform:scale(1.15,.7)}
-.cur.hov.down .cur-b{transform:scale(1.7,1.3)}
-.cur.lbl.down .cur-b{transform:scale(4.3,3.8)}
+.bcur.hov .cur-b{transform:scale(1.9);opacity:.5}
+.bcur.lbl .cur-b{transform:scale(4.6)}
+.bcur.lbl .cur-b::before,.bcur.lbl .cur-b::after{opacity:0}
+.bcur.lbl>b{opacity:1;transform:translate(-50%,-50%)}
+.bcur.down .cur-b{transform:scale(1.15,.7)}
+.bcur.hov.down .cur-b{transform:scale(1.7,1.3)}
+.bcur.lbl.down .cur-b{transform:scale(4.3,3.8)}
 .cur-flour{position:fixed;inset:0;width:100%;height:100%;z-index:9998;pointer-events:none}
 </style>
 <script>document.documentElement.classList.add('js')</script>
@@ -770,14 +804,23 @@ html.cc,html.cc *{cursor:none!important}
 </div>
 
 <!-- overlay (mobile) -->
-<div class="overlay" id="overlay">
-  <button class="close" id="closeBtn" aria-label="Закрити">×</button>
-  <a href="#about">Про нас</a>
-  <a href="#oven">Піч</a>
-  <a href="#menu">Меню</a>
-  <a href="#gallery">Атмосфера</a>
-  <a href="#contacts">Контакти</a>
-  <div class="status"><span class="dot"></span><span class="st-text"></span></div>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Меню сайту">
+  <div class="ov-top">
+    <a href="#top" class="logo"><span class="mark"></span>Proof<i>.</i></a>
+    <button class="close" id="closeBtn" type="button" aria-label="Закрити меню"><span></span><span></span></button>
+  </div>
+  <nav class="ov-nav" aria-label="Розділи">
+    <a href="#about" style="--i:0"><b>01</b><span class="ov-mask"><span class="ov-t">Про нас</span></span><small>Хліб, якому дають час</small></a>
+    <a href="#oven" style="--i:1"><b>02</b><span class="ov-mask"><span class="ov-t">Піч</span></span><small>Що й коли виходить з печі</small></a>
+    <a href="#menu" style="--i:2"><b>03</b><span class="ov-mask"><span class="ov-t">Меню</span></span><small>Кава, випічка, солоне, десерти</small></a>
+    <a href="#gallery" style="--i:3"><b>04</b><span class="ov-mask"><span class="ov-t">Атмосфера</span></span><small>Як у нас усередині</small></a>
+    <a href="#contacts" style="--i:4"><b>05</b><span class="ov-mask"><span class="ov-t">Контакти</span></span><small>Київ, вул. Хлібна, 7</small></a>
+  </nav>
+  <div class="ov-foot">
+    <div class="status"><span class="dot"></span><span class="st-text"></span></div>
+    <a href="tel:+380000000000">+380 00 000 00 00</a>
+  </div>
+</div>
 </div>
 
 <main>
@@ -1613,8 +1656,29 @@ function dock(){
 new ResizeObserver(measureSheets).observe(document.body);
 addEventListener('load',measureSheets);
 addEventListener('scroll',onScroll,{passive:true}); onScroll();
-function setMenu(on){ overlay.classList.toggle('open',on); document.body.style.overflow=on?'hidden':''; }
-document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>setMenu(true)));
+let menuOpener=null;
+const burgers=[...document.querySelectorAll('[data-open]')];
+function setMenu(on,from){
+  if(on===overlay.classList.contains('open')) return;
+  if(on){
+    const btn=from||burgers.find(b=>b.offsetParent)||burgers[0];      // коло розкривається саме з тієї кнопки, яку натиснули
+    const r=btn.getBoundingClientRect();
+    overlay.style.setProperty('--ox',(r.left+r.width/2)+'px'); overlay.style.setProperty('--oy',(r.top+r.height/2)+'px');
+    menuOpener=btn;
+  }
+  overlay.classList.toggle('open',on); document.body.style.overflow=on?'hidden':'';
+  burgers.forEach(b=>b.setAttribute('aria-expanded',String(on)));
+  if(on) setTimeout(()=>document.getElementById('closeBtn').focus({preventScroll:true}),60);
+  else if(menuOpener) menuOpener.focus({preventScroll:true});
+}
+burgers.forEach(b=>{ b.setAttribute('aria-expanded','false'); b.setAttribute('aria-controls','overlay'); b.addEventListener('click',()=>setMenu(true,b)); });
+// Tab не виходить за межі відкритого меню
+overlay.addEventListener('keydown',e=>{
+  if(e.key!=='Tab') return;
+  const f=[...overlay.querySelectorAll('a,button')], first=f[0], last=f.at(-1);
+  if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
 document.getElementById('closeBtn').addEventListener('click',()=>setMenu(false));
 overlay.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
 addEventListener('keydown',e=>{ if(e.key==='Escape') setMenu(false); });
@@ -1671,7 +1735,7 @@ setInterval(()=>{updateStatus();renderOven();},60000);
 requestAnimationFrame(()=>setTimeout(initSite,0));
 </script>
 
-<div class="cur" id="cur" aria-hidden="true"><div class="cur-s" id="curS"><div class="cur-b"></div></div><b></b></div>
+<div class="bcur" id="cur" aria-hidden="true"><div class="cur-s" id="curS"><div class="cur-b"></div></div><b></b></div>
 <canvas class="cur-flour" id="curFlour" aria-hidden="true"></canvas>
 <script>
 /* ---------- курсор «булочка»: тягнеться, як тісто, і сиплє борошно ---------- */
